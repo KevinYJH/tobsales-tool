@@ -122,15 +122,15 @@ body {
 .quiz-sticky {
   position:sticky; top:0; z-index:30;
   padding-top:4px; margin-bottom:10px;
-  background:linear-gradient(180deg, rgba(248,243,255,.96), rgba(248,243,255,.86) 72%, rgba(248,243,255,0));
+  background:linear-gradient(180deg, rgba(248,243,255,.96), rgba(248,243,255,.88) 78%, rgba(248,243,255,0));
   backdrop-filter:blur(10px);
 }
 .progress-wrap {
-  background:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.96);
   border:1px solid var(--line);
   border-radius:20px;
   padding:14px;
-  margin-bottom:10px;
+  margin-bottom:4px;
   backdrop-filter:blur(12px);
   box-shadow:0 8px 20px rgba(123,97,255,.08);
 }
@@ -148,10 +148,6 @@ body {
 .module-hero {
   padding:12px 6px 8px;
   text-align:left;
-  background:rgba(255,255,255,.82);
-  border:1px solid var(--line);
-  border-radius:20px;
-  box-shadow:0 8px 20px rgba(123,97,255,.06);
 }
 .module-kicker {
   font-size:.92rem; color:var(--pri); font-weight:900; letter-spacing:.5px;
@@ -185,17 +181,17 @@ body {
   font-size:1.08rem; line-height:1.7; font-weight:900; margin-bottom:16px;
 }
 .scale {
-  display:flex; flex-direction:column; gap:10px;
+  display:flex; flex-direction:column; gap:12px;
 }
-.scale-labels {
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
+.scale-top {
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
 }
-.scale-labels span {
+.scale-top span {
   color:#9aa4b8; font-size:.92rem; font-weight:800; line-height:1.2;
-  flex:0 0 auto;
+  white-space:nowrap; flex:0 0 auto;
 }
 .opts {
-  display:flex; justify-content:center; gap:10px; flex-wrap:nowrap;
+  display:flex; justify-content:center; gap:10px; flex-wrap:nowrap; flex:1;
 }
 .opts button {
   width:46px; height:46px; border-radius:50%;
@@ -313,7 +309,7 @@ body {
   .module-title { font-size:1.78rem; }
   .summary-grid { grid-template-columns:1fr; }
   .result-actions, .result-subgrid { grid-template-columns:1fr; }
-  .scale-labels span { font-size:.84rem; }
+  .scale-top span { font-size:.84rem; }
   .opts { gap:8px; }
   .opts button { width:40px; height:40px; font-size:1rem; }
   .chart-wrap { height:260px; }
@@ -348,11 +344,11 @@ body {
           </div>
           <div class="track"><div id="progressBar" class="bar"></div></div>
         </div>
-        <div id="moduleHero" class="module-hero module-anim">
-          <div class="module-kicker" id="moduleKicker">第 1 类 / 共 6 类</div>
-          <div class="module-title" id="moduleTitle">成就驱动</div>
-          <div class="module-sub" id="moduleSub"></div>
-        </div>
+      </div>
+      <div id="moduleHero" class="module-hero module-anim">
+        <div class="module-kicker" id="moduleKicker">第 1 类 / 共 6 类</div>
+        <div class="module-title" id="moduleTitle">成就驱动</div>
+        <div class="module-sub" id="moduleSub"></div>
       </div>
       <form id="moduleForm"></form>
       <div class="nav-row">
@@ -847,6 +843,12 @@ function showPage(id) {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
+function scrollViewportTop() {
+  const shell = document.querySelector('.shell');
+  if (shell) shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function answeredCount() {
   return groups.reduce((sum,g)=> sum + g.questions.filter(q => answers[q.id]).length, 0);
 }
@@ -880,11 +882,13 @@ function renderModule(index) {
         <div class="q-num">Q${String(idx + 1).padStart(2,'0')} · ${group.title}</div>
         <div class="q-text">${escapeHtml(q.text)}</div>
         <div class="scale">
-          <span>不符合</span>
-          <div class="opts">
-            ${[1,2,3,4,5].map(n => `<button type="button" data-q="${q.id}" data-v="${n}" class="${String(val)===String(n)?'on':''}">${n}</button>`).join('')}
+          <div class="scale-top">
+            <span>不符合</span>
+            <div class="opts">
+              ${[1,2,3,4,5].map(n => `<button type="button" data-q="${q.id}" data-v="${n}" class="${String(val)===String(n)?'on':''}">${n}</button>`).join('')}
+            </div>
+            <span>很符合</span>
           </div>
-          <span>很符合</span>
         </div>
       </div>
     `;
@@ -1246,6 +1250,11 @@ window.saveLongImage = async function() {
 };
 
 window.backToLanding = function() {
+  answers = {};
+  localStorage.removeItem(STORAGE_KEY);
+  currentGroup = 0;
+  updateProgress();
+  moduleForm.innerHTML = '';
   showPage('landingPage');
 };
 
