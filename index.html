@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ToB销售行业适配度评估</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg1:#f8f3ff;
+  --bg2:#eef4ff;
+  --ink:#182235;
+  --sub:#69758a;
+  --line:#eadff7;
+  --card:rgba(255,255,255,.9);
+  --white:#fff;
+  --pri:#7b61ff;
+  --pri2:#b56bff;
+  --pink:#ff5f94;
+  --soft:#f5f7ff;
+  --good:#22c55e;
+  --better:#3b82f6;
+  --mid:#f59e0b;
+  --warn:#fb7185;
+  --shadow:0 18px 44px rgba(114,92,255,.13);
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { margin:0; padding:0; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,255,255,.95), transparent 22%),
+    radial-gradient(circle at 100% 0%, rgba(255,112,160,.16), transparent 18%),
+    linear-gradient(135deg,var(--bg1),var(--bg2) 58%, #fff8fb);
+  min-height:100vh;
+  padding:14px;
+}
+.shell {
+  max-width:760px;
+  margin:0 auto;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.85);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  backdrop-filter:blur(18px);
+}
+.topbar {
+  padding:26px 20px 8px;
+  background:linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,.1));
+}
+.eyebrow {
+  display:flex; align-items:center; gap:12px;
+  font-size:1.1rem; font-weight:800; color:#384457;
+}
+.dot {
+  width:28px; height:28px; border-radius:50%;
+  background:linear-gradient(135deg,var(--pri),var(--pink));
+  box-shadow:0 10px 20px rgba(124,98,255,.25);
+}
+.hero-title {
+  margin:18px 0 10px;
+  font-size:clamp(2.15rem, 6vw, 3.1rem);
+  line-height:1.04; font-weight:950; letter-spacing:-1px;
+  max-width:11em;
+}
+.hero-sub {
+  margin:0;
+  color:var(--sub);
+  font-size:1rem;
+  line-height:1.8;
+}
+.content { padding:18px 20px 24px; }
+.page { display:none; }
+.page.active { display:block; }
+.panel {
+  background:rgba(255,255,255,.76);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px 16px;
+  margin-bottom:14px;
+  box-shadow:0 6px 18px rgba(122,92,255,.05);
+}
+.panel-title {
+  font-size:1.4rem; font-weight:900; margin-bottom:8px;
+}
+.panel-sub {
+  font-size:1rem; line-height:1.8; color:var(--sub); margin:0;
+}
+.field-label {
+  display:block; font-size:1.05rem; font-weight:800; margin:6px 0 12px;
+}
+.input {
+  width:100%; border:2px solid #ddd8ff; background:#fff;
+  border-radius:20px; height:58px; font-size:1.12rem; padding:0 18px;
+  outline:none; color:var(--ink); font-weight:700;
+  transition:.2s;
+}
+.input:focus {
+  border-color:var(--pri);
+  box-shadow:0 0 0 6px rgba(123,97,255,.12);
+}
+.primary-btn,.ghost-btn {
+  width:100%; border:none; border-radius:999px; height:58px;
+  font-size:1.18rem; font-weight:900; cursor:pointer;
+  transition:.22s ease;
+}
+.primary-btn {
+  color:#fff;
+  background:linear-gradient(90deg,var(--pri),var(--pink));
+  box-shadow:0 16px 26px rgba(255,95,148,.23);
+}
+.primary-btn:active,.ghost-btn:active { transform:scale(.99); }
+.ghost-btn {
+  background:#fff; color:var(--pri); border:2px solid #e1d8ff;
+}
+.mini-note {
+  margin-top:12px; font-size:.9rem; color:#8793a8; line-height:1.7;
+}
+.progress-wrap {
+  position:sticky; top:10px; z-index:8;
+  background:rgba(255,255,255,.86);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px;
+  margin-bottom:14px;
+  backdrop-filter:blur(12px);
+}
+.progress-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.progress-row strong { font-size:1rem; }
+.progress-row span { color:var(--sub); font-weight:800; }
+.track {
+  height:10px; background:#efe9ff; border-radius:999px; overflow:hidden;
+}
+.bar {
+  width:0%; height:100%;
+  background:linear-gradient(90deg,var(--pri),var(--pink));
+  border-radius:999px; transition:width .25s ease;
+}
+.module-hero {
+  padding:12px 4px 6px;
+  text-align:left;
+}
+.module-kicker {
+  font-size:.92rem; color:var(--pri); font-weight:900; letter-spacing:.5px;
+}
+.module-title {
+  margin:10px 0 8px; font-size:2.05rem; font-weight:950; line-height:1.08;
+}
+.module-sub {
+  color:var(--sub); line-height:1.8; font-size:.98rem;
+}
+.module-anim {
+  animation:moduleIn .45s cubic-bezier(.22,.85,.2,1);
+  transform-origin:left center;
+}
+@keyframes moduleIn {
+  from { opacity:0; transform:translateY(14px) scale(.98); filter:blur(5px); }
+  to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+}
+.q-card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px 16px;
+  margin-bottom:14px;
+  box-shadow:0 8px 22px rgba(123,97,255,.05);
+}
+.q-num {
+  color:var(--pri); font-size:1rem; font-weight:900; margin-bottom:10px;
+}
+.q-text {
+  font-size:1.08rem; line-height:1.7; font-weight:900; margin-bottom:16px;
+}
+.scale {
+  display:grid; grid-template-columns:58px 1fr 58px; align-items:center; gap:8px;
+}
+.scale span {
+  color:#9aa4b8; font-size:.92rem; font-weight:800;
+}
+.scale span:last-child { text-align:right; }
+.opts {
+  display:flex; justify-content:center; gap:10px;
+}
+.opts button {
+  width:46px; height:46px; border-radius:50%;
+  border:none; background:#f3f4fb; color:#596579;
+  font-size:1.08rem; font-weight:900; cursor:pointer; transition:.18s ease;
+}
+.opts button.on {
+  color:#fff; transform:translateY(-2px) scale(1.05);
+  background:linear-gradient(135deg,var(--pri),var(--pri2));
+  box-shadow:0 12px 18px rgba(123,97,255,.28);
+}
+.nav-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;
+}
+.result-head {
+  background:linear-gradient(135deg, rgba(123,97,255,.12), rgba(255,95,148,.09));
+  border:1px solid var(--line);
+  border-radius:26px; padding:20px 18px; margin-bottom:16px;
+}
+.result-name { font-size:1.08rem; color:var(--sub); font-weight:800; }
+.result-title { font-size:2rem; font-weight:950; line-height:1.1; margin:8px 0 0; }
+.top-industry {
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:12px; background:#fff; border:1px solid #ebe4ff;
+  border-radius:999px; padding:10px 14px; font-weight:900;
+}
+.summary-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 18px;
+}
+.stat-card {
+  background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px 12px;
+}
+.stat-label { color:var(--sub); font-size:.9rem; font-weight:800; margin-bottom:6px; }
+.stat-value { font-size:1.36rem; font-weight:950; }
+.result-card {
+  border-radius:26px; border:2px solid; overflow:hidden; margin-bottom:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,.04);
+  background:#fff;
+}
+.zone-head {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 16px 14px;
+}
+.zone-title { font-size:1.32rem; font-weight:950; }
+.badge {
+  white-space:nowrap; border-radius:999px; padding:8px 12px; font-size:.88rem; font-weight:900;
+  background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.05);
+}
+.zone-good { border-color:#98e5b4; background:linear-gradient(180deg, rgba(220,252,231,.88), rgba(255,255,255,.98) 46%); }
+.zone-good .badge { color:var(--good); }
+.zone-blue { border-color:#a9d0ff; background:linear-gradient(180deg, rgba(219,234,254,.92), rgba(255,255,255,.98) 46%); }
+.zone-blue .badge { color:var(--better); }
+.zone-mid { border-color:#ffd58a; background:linear-gradient(180deg, rgba(255,248,220,.95), rgba(255,255,255,.98) 46%); }
+.zone-mid .badge { color:var(--mid); }
+.zone-warn { border-color:#ffc0cf; background:linear-gradient(180deg, rgba(255,228,235,.95), rgba(255,255,255,.98) 46%); }
+.zone-warn .badge { color:var(--warn); }
+.card-body { padding:0 16px 16px; }
+.big-score { font-size:2rem; font-weight:950; margin:4px 0 0; }
+.chart-wrap {
+  position:relative; height:280px; border:1px dashed #ddd8ff; border-radius:22px;
+  background:linear-gradient(180deg,#fff, #faf8ff); padding:12px; margin:14px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.chart-wrap::before {
+  content:''; position:absolute; inset:0; pointer-events:none; border-radius:22px;
+  background:linear-gradient(135deg, rgba(123,97,255,.05), rgba(255,95,148,.03) 40%, transparent 75%);
+}
+.info {
+  margin-top:12px; display:grid; gap:10px;
+}
+.info-block {
+  border:1px solid var(--line); border-radius:20px; padding:14px 14px 13px; background:linear-gradient(180deg,#ffffff, #fbf9ff);
+  box-shadow:0 8px 18px rgba(123,97,255,.04);
+}
+.info-block b { display:inline-block; margin-bottom:8px; font-size:.96rem; padding:6px 10px; border-radius:12px; background:linear-gradient(135deg,#d9f99d,#bef264); color:#365314; box-shadow:0 4px 10px rgba(132,204,22,.14); }
+.info-block p { margin:0; color:#405067; line-height:1.75; }
+.card-toggle {
+  width:100%; border:none; cursor:pointer; background:#fff;
+  padding:14px 16px; font-size:.98rem; font-weight:900; color:var(--pri);
+  border-top:1px dashed #dfd5ff;
+}
+.hidden-area { display:none; }
+.hidden-area.show { display:block; animation:fadeIn .28s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.section-hint {
+  color:var(--sub); font-size:.95rem; line-height:1.8; margin:0 0 12px;
+  background:linear-gradient(135deg, rgba(123,97,255,.08), rgba(255,95,148,.06));
+  border:1px solid #e9defe; border-radius:16px; padding:12px 14px;
+}
+.section-hint .match-line { display:block; margin-top:4px; }
+.section-hint .good-txt { color:#5b3df5; font-weight:900; }
+.section-hint .gap-txt { color:#ff5f94; font-weight:900; }
+.fold-title {
+  font-size:1.15rem; font-weight:950; margin:18px 4px 12px;
+}
+
+.result-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+.tiny-note { margin-top:14px; font-size:.84rem; color:#8b95aa; line-height:1.7; text-align:center; }
+.tip-list { display:grid; gap:8px; margin-top:12px; }
+.tip-chip {
+  border:1px solid var(--line); border-radius:16px; background:#fff; padding:10px 12px;
+  color:#4b5a70; font-size:.93rem; line-height:1.7;
+}
+.result-subgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0 10px; }
+.note-card { background:linear-gradient(180deg, rgba(237,242,255,.95), rgba(255,255,255,.98)); border:1px solid #d9e6ff; border-radius:20px; padding:14px 14px; box-shadow:0 10px 20px rgba(59,130,246,.06); }
+.note-card b { display:inline-block; margin-bottom:8px; font-size:.96rem; padding:6px 10px; border-radius:12px; background:linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1d4ed8; box-shadow:0 4px 10px rgba(59,130,246,.14); }
+.note-card div { color:#405067; line-height:1.72; }
+.save-loading { opacity:.7; pointer-events:none; }
+
+@media (max-width:640px) {
+  body { padding:10px; }
+  .topbar { padding:20px 16px 8px; }
+  .content { padding:14px 16px 20px; }
+  .hero-title { font-size:2.35rem; max-width:9em; }
+  .module-title { font-size:1.78rem; }
+  .summary-grid { grid-template-columns:1fr; }
+  .result-actions, .result-subgrid { grid-template-columns:1fr; }
+  .scale { grid-template-columns:42px 1fr 42px; }
+  .opts button { width:42px; height:42px; }
+  .chart-wrap { height:260px; }
+  .nav-row { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell" id="captureArea">
+  <div class="topbar">
+    <div class="eyebrow"><div class="dot"></div><div>ToB销售行业适配度评估</div></div>
+    <div class="hero-title">ToB销售行业<br>适配度评估</div>
+    <p class="hero-sub">用于帮助你先做行业方向排序，再结合自身经历判断更适合切入哪类 ToB 赛道。适合手机分步作答，也方便结果截图保存。</p>
+  </div>
+
+  <div class="content">
+    <section id="landingPage" class="page active">
+      <div class="panel">
+        <label class="field-label" for="userName">先输入一个称呼</label>
+        <input id="userName" class="input" maxlength="14" placeholder="例如：韩主任 / 小李 / 转行选手">
+        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告，并默认展开最推荐的 3 个行业。</div>
+      </div>
+      <button id="startBtn" class="primary-btn">正式开始</button>
+    </section>
+
+    <section id="quizPage" class="page">
+      <div class="progress-wrap">
+        <div class="progress-row">
+          <strong id="progressLabel">作答进度</strong>
+          <span id="progressText">0 / 36</span>
+        </div>
+        <div class="track"><div id="progressBar" class="bar"></div></div>
+      </div>
+      <div id="moduleHero" class="module-hero module-anim">
+        <div class="module-kicker" id="moduleKicker">第 1 类 / 共 6 类</div>
+        <div class="module-title" id="moduleTitle">成就驱动</div>
+        <div class="module-sub" id="moduleSub"></div>
+      </div>
+      <form id="moduleForm"></form>
+      <div class="nav-row">
+        <button type="button" class="ghost-btn" id="prevBtn">上一类</button>
+        <button type="button" class="primary-btn" id="nextBtn">下一类</button>
+      </div>
+    </section>
+
+    <section id="resultPage" class="page"></section>
+  </div>
+</div>
+
+<script>
+const groups = [
+  {
+    "id": "drive",
+    "title": "成就驱动",
+    "subtitle": "看你是否愿意主动争取结果、承担目标压力，参考职业兴趣中的企业型倾向与成就追求。",
+    "ref": "参考：RIASEC 企业型倾向 + 成就动机",
+    "questions": [
+      {
+        "id": "D1",
+        "text": "看到明确结果目标时，我通常会更想冲一把，而不是先退一步。",
+        "reverse": false
+      },
+      {
+        "id": "D2",
+        "text": "当机会、客户或资源需要争取时，我更倾向主动出手，而不是等机会自己来。",
+        "reverse": false
+      },
+      {
+        "id": "D3",
+        "text": "为了达成重要结果，我能接受阶段性的高投入和高压力。",
+        "reverse": false
+      },
+      {
+        "id": "D4",
+        "text": "当一件事结果还没定下来时，我通常更愿意继续争取，而不是尽快抽身。",
+        "reverse": false
+      },
+      {
+        "id": "D5",
+        "text": "遇到竞争场景时，我更容易产生行动欲，而不只是紧张感。",
+        "reverse": false
+      },
+      {
+        "id": "D6",
+        "text": "只要工作稳定就好，是否做到更高结果对我来说并不重要。",
+        "reverse": true
+      }
+    ]
+  },
+  {
+    "id": "target",
+    "title": "目标执行",
+    "subtitle": "看你是否能把目标拆成步骤并持续推进，参考尽责性中的自律、持续性与执行控制。",
+    "ref": "参考：Big Five 尽责性（自律 / 持续推进）",
+    "questions": [
+      {
+        "id": "T1",
+        "text": "接到任务后，我通常会先拆步骤、排节点，再真正开始推进。",
+        "reverse": false
+      },
+      {
+        "id": "T2",
+        "text": "面对周期长、反馈慢的事情，我也能持续跟进，不太容易半途松掉。",
+        "reverse": false
+      },
+      {
+        "id": "T3",
+        "text": "即使一开始反馈一般，我也会按计划继续推进，而不是很快放弃。",
+        "reverse": false
+      },
+      {
+        "id": "T4",
+        "text": "我习惯把重要事情拆成阶段任务，而不是只盯着一个模糊的大目标。",
+        "reverse": false
+      },
+      {
+        "id": "T5",
+        "text": "当目标已经定下，我通常会给自己明确的时间边界。",
+        "reverse": false
+      },
+      {
+        "id": "T6",
+        "text": "只要方向差不多，过程是否持续推进、节点是否达成都没那么重要。",
+        "reverse": true
+      }
+    ]
+  },
+  {
+    "id": "analysis",
+    "title": "分析学习",
+    "subtitle": "看你是否愿意理解复杂逻辑、验证信息并持续学习，参考开放性中的求知、理解与抽象思考。",
+    "ref": "参考：Big Five 开放性（求知 / 理解复杂性）",
+    "questions": [
+      {
+        "id": "A1",
+        "text": "接触一个陌生行业时，我愿意先花时间把它的业务逻辑搞明白。",
+        "reverse": false
+      },
+      {
+        "id": "A2",
+        "text": "做重要判断前，我会先核实关键事实，而不是只靠直觉。",
+        "reverse": false
+      },
+      {
+        "id": "A3",
+        "text": "面对复杂问题时，我愿意多看几个角度，而不只抓表面答案。",
+        "reverse": false
+      },
+      {
+        "id": "A4",
+        "text": "如果一个产品或方案比较复杂，我通常有耐心把它研究明白。",
+        "reverse": false
+      },
+      {
+        "id": "A5",
+        "text": "我乐于持续学习新概念、新工具或新行业知识。",
+        "reverse": false
+      },
+      {
+        "id": "A6",
+        "text": "只要事情能先推进，底层逻辑其实没必要搞得太清楚。",
+        "reverse": true
+      }
+    ]
+  },
+  {
+    "id": "rigor",
+    "title": "严谨审慎",
+    "subtitle": "看你对细节、风险与错误的敏感度，参考尽责性中的有序性与审慎决策倾向。",
+    "ref": "参考：Big Five 尽责性（有序 / 审慎）",
+    "questions": [
+      {
+        "id": "R1",
+        "text": "提交重要材料前，我通常会主动复查细节，尽量避免低级错误。",
+        "reverse": false
+      },
+      {
+        "id": "R2",
+        "text": "做关键决策时，我更习惯先验证信息，再做判断。",
+        "reverse": false
+      },
+      {
+        "id": "R3",
+        "text": "我会留意流程和细节，因为这些往往决定最终结果。",
+        "reverse": false
+      },
+      {
+        "id": "R4",
+        "text": "面对重要事项时，我通常会提前预想风险点。",
+        "reverse": false
+      },
+      {
+        "id": "R5",
+        "text": "即使时间紧，我也会尽量保留必要的核对步骤。",
+        "reverse": false
+      },
+      {
+        "id": "R6",
+        "text": "只要大方向没问题，细节上的小错通常不用太在意。",
+        "reverse": true
+      }
+    ]
+  },
+  {
+    "id": "empathy",
+    "title": "关系共情",
+    "subtitle": "看你是否能感知他人需求、建立信任并维持长期关系，参考宜人性中的共情与合作倾向。",
+    "ref": "参考：Big Five 宜人性（共情 / 合作）",
+    "questions": [
+      {
+        "id": "E1",
+        "text": "和人沟通时，我通常能比较快抓到对方真正关心的点。",
+        "reverse": false
+      },
+      {
+        "id": "E2",
+        "text": "当对方表达顾虑时，我会先理解他的立场，再想怎么推进。",
+        "reverse": false
+      },
+      {
+        "id": "E3",
+        "text": "我愿意花时间经营关系，而不是只在需要结果时才联系别人。",
+        "reverse": false
+      },
+      {
+        "id": "E4",
+        "text": "在合作里，我会注意让对方感到被理解，而不只是把我的意思说清楚。",
+        "reverse": false
+      },
+      {
+        "id": "E5",
+        "text": "我通常愿意倾听别人没有明说出来的担心和顾虑。",
+        "reverse": false
+      },
+      {
+        "id": "E6",
+        "text": "在工作里，我更在意把自己的意思讲完，而不是确认对方是否真正理解。",
+        "reverse": true
+      }
+    ]
+  },
+  {
+    "id": "social",
+    "title": "社交影响",
+    "subtitle": "看你在陌生关系中开口、表达、主导和影响他人的倾向，参考外向性中的主动表达与自信。",
+    "ref": "参考：Big Five 外向性（主动表达 / 影响）",
+    "questions": [
+      {
+        "id": "S1",
+        "text": "在陌生人较多的场合里，我通常能比较自然地先开口破冰。",
+        "reverse": false
+      },
+      {
+        "id": "S2",
+        "text": "当我有清晰观点时，我愿意表达出来并争取他人认同。",
+        "reverse": false
+      },
+      {
+        "id": "S3",
+        "text": "在一对一沟通里，我通常能逐步把节奏带到我想讨论的话题上。",
+        "reverse": false
+      },
+      {
+        "id": "S4",
+        "text": "即使面对比我更强势的人，我也能基本保持表达和回应。",
+        "reverse": false
+      },
+      {
+        "id": "S5",
+        "text": "在需要展示或汇报的场景里，我通常愿意站出来承担表达任务。",
+        "reverse": false
+      },
+      {
+        "id": "S6",
+        "text": "只要场面一紧张，我就更倾向少说少做，尽量不成为注意焦点。",
+        "reverse": true
+      }
+    ]
+  }
+];
+const industries = [
+  {
+    "name": "半导体/硬科技",
+    "ideal": [
+      4.0,
+      4.0,
+      5.0,
+      4.5,
+      3.0,
+      3.5
+    ],
+    "status": "2026年全球半导体市场规模预计将突破6000亿美元，年增长率达12%；部分预测显示销售额将增至9750亿美元，同比增长约25%。AI、先进制程与供应链去风险化驱动下，半导体成为成长最明确的产业。芯片销售人才极度稀缺，尤其在深圳，真正能打硬仗的销售团队迟迟组建不起来。人才缺口预计2026年将增至50万人。",
+    "salary": "2026年芯片行业校招平均起薪约20万-40万元，设计类岗位可达25万-45万元。芯片销售（技术支持方向）每月一半时间在客户现场，薪资看业绩和行业热度。",
+    "growth": "芯片销售代表→区域销售经理→大区总监→事业部总经理。技术型销售可走FAE（现场应用工程师）→技术销售经理→产品线总监的复合路径。随着国产芯片公司持续扩张，FAE和芯片销售需求依然旺盛。",
+    "prospect": "中国是全球最大的半导体市场，预计年增长率超15%。国产替代窗口期打开，AI芯片、先进制程需求持续爆发。即便此后增速放缓，至2036年半导体年销售额仍有望突破2万亿美元。",
+    "challenge": "技术理解力门槛极高，需能与工程师对话；决策链长（3-12个月）；竞争白热化，落后者加速出局；要求理工科背景和持续学习能力。同时面临技术壁垒高、核心人才稀缺、跨环节人才流动不足的多重挑战。"
+  },
+  {
+    "name": "云/AI/软件",
+    "ideal": [
+      4.5,
+      4.5,
+      4.5,
+      4.0,
+      3.5,
+      4.0
+    ],
+    "status": "2026年AI岗位数量同比增长约14倍，AI新发岗位的平均月薪已突破6万元，将新经济行业的整体平均水平甩开了足足26%。AI岗位在新经济岗位中的占比从2.29%跃升至26.23%，增长超过10倍。企业从试点探索转向规模化价值创造。",
+    "salary": "大模型与AIGC算法工程师年薪均值达65万元。多模态算法工程师年薪区间60万-150万元，具身智能算法工程师年薪最高可达200万元。AI行业优秀人才跳槽的薪资涨幅维持在20%-30%，关键技术岗涨幅最高可达50%。",
+    "growth": "SDR/BDR→客户经理→大客户经理→区域总监→副总裁。AI产品销售和软件销售岗位需求旺盛，1-3年经验SaaS销售月薪可达19.7K，AI销售专家3-5年经验年薪可达40-80万。",
+    "prospect": "AI从“加分项”变为48%科技岗位的“标配能力”。AI产业已告别单点突破的上半场，薪酬定价体系随之重构，人才的能力模型迎来全面升级。",
+    "challenge": "产品迭代极快，需持续学习；B端客户线上拒绝率已从2023年42%飙升至68%；个人英雄模式失效，体系作战成为关键；技术理解力要求高，竞争激烈。"
+  },
+  {
+    "name": "新能源/储能",
+    "ideal": [
+      5.0,
+      5.0,
+      4.0,
+      3.5,
+      3.0,
+      4.0
+    ],
+    "status": "2026年储能行业关键词依然是“出海”，当国内市场陷入红海竞争，所有人都将目光投向轮番爆发的海外市场。“136号文”取消了新能源强制配储，但“114号文”带来了容量电价机制，储能行业进入“机制切换元年”，从“强配”到“真赚钱”的质变正在发生。",
+    "salary": "出海销售负责人年薪300万的岗位空置两年招不到人。BMS高级工程师年薪70万-130万，电力电子专家70万-130万，EMS/SCADA工程师65万-120万。深圳储能企业人才竞争强度明显高于传统新能源细分领域，薪酬体系面临系统性重构。",
+    "growth": "销售工程师→区域销售经理→海外销售总监→事业部总经理。5年以上经验可主导百万级项目，8年以上年薪可达80-150万+出海补贴。",
+    "prospect": "随着“双碳”目标持续推进、可再生能源装机规模快速增长、工商业储能与电网侧储能需求爆发，储能行业已从早期探索走向产业化落地与规模化扩张并行阶段。行业从“设备为中心”迈向“系统与商业模式为中心”。",
+    "challenge": "海外市场需懂认证、物流、汇率、跨文化沟通；国内价格战激烈，增收不增利；要求频繁海外出差，抗压能力要求高；产品认证周期长（1-6个月）。2026年新能源行业高薪神话已破灭，985/211硕士起薪从30万+回落，行业竞争加剧。"
+  },
+  {
+    "name": "互联网商业化",
+    "ideal": [
+      5.0,
+      4.5,
+      4.0,
+      3.0,
+      3.0,
+      5.0
+    ],
+    "status": "2026年广告销售/商务开发年薪约10万-30万元（一线城市更高）。2026年外部招聘薪资涨幅预计为20%，AI方向跳槽薪资涨幅达30%。市场营销人才需求同比增长约23%，就业率稳定在90%以上。",
+    "salary": "应届生（一线城市）月薪6K-15K，头部互联网可达12K-18K；3-5年经验（主管/经理）年薪20-40万。数字营销总监年薪70-130万，增长负责人年薪80-150万。广告销售年薪约10万-30万元，投放执行月薪8K-20K。",
+    "growth": "广告销售→客户经理→销售总监→副总裁。节奏快，正反馈周期短（1-3个月），适合抗压能力强、喜欢短平快的人，3-5年经验可晋升管理岗。",
+    "prospect": "AI驱动广告技术革新，数字营销需求持续增长；但行业告别规模化扩张，步入存量优化阶段。专业细分岗位的薪资涨幅尤为亮眼，高科技、互联网与新媒体行业2026年外部招聘薪资涨幅预计为20%。",
+    "challenge": "广告主ROI压力巨大，客户要求增长确定性而非曝光；传统广告模式失效，需懂数据分析和AI工具；竞争激烈，离职率高；行业正经历结构性重塑，AI与数据技能正从加分项变为生存底线。"
+  },
+  {
+    "name": "生物医药",
+    "ideal": [
+      4.0,
+      4.0,
+      4.0,
+      4.5,
+      5.0,
+      4.5
+    ],
+    "status": "生物医药产业在创新药物、基因技术、医疗器械及服务外包等赛道呈现扩张态势，全国层面人才需求增长明显。2026年医药代表正遭遇三大危机：身份危机、业绩危机和认知危机，叠加行业裁员频频。行业调薪策略谨慎，68%企业调薪集中在0%-6%。",
+    "salary": "跨国药企（MNC）调薪区间2%-8%，生物制药企业与民营本土企业3%-5%，生物技术公司82%企业调薪0%-6%。研发硕博起薪15-25万/年，CRA/CRC 2-3年经验25-40万/年。",
+    "growth": "医药代表→区域销售经理→大区总监→全国销售总监。转型路径为“内部升级→行业内转型→跨界拓展”，优先走“学术化+合规化+数字化”路径。2026年医药代表招聘难，本质是强监管下的能力模型更换——企业既要“招得到”，更要“用得稳、用得合规”。",
+    "prospect": "老龄化+医疗刚需，行业抗周期性强；创新药、医疗器械、CXO持续增长；高端复合型人才成为争夺焦点。但2026年医药代表面临的核心挑战是：身份危机（传统带金销售模式被淘汰）、业绩危机（合规高压下业绩达成更难）、认知危机（需从关系型转向学术型）。",
+    "challenge": "政策监管严格（带量采购），学术推广要求高；决策链涉及医生、院长、采购科，关系型销售要求高；需医学背景或持续学习能力；2026年行业调薪谨慎，跳槽涨薪呈现“中间高”分化。"
+  },
+  {
+    "name": "智能制造/工业自动化",
+    "ideal": [
+      4.0,
+      4.5,
+      4.0,
+      4.5,
+      3.5,
+      3.5
+    ],
+    "status": "智能装备制造涵盖工业机器人、数控机床、智能检测设备等研发与生产，自动化生产线集成面向汽车、电子、医药等高自动化需求行业。2026年PLC人才缺口将达100万。工业机器人、机器视觉、AGV需求快速增长。春招会上算法工程师月薪2.2万-3万元，“招了两个月没招到几个合适的”。",
+    "salary": "基础执行层（3-5年经验）年薪20-30万元。自动化类本科应届生起薪8万-12万元/年。系统集成负责人年薪60万-120万，PLC/运动控制专家年薪40万-80万。硕士校招月薪8000-10000元。",
+    "growth": "销售工程师→区域经理→销售总监（管理线）；初级→中级→高级销售工程师（专业线），Y型双通道发展。公司提供系统化培训和清晰的晋升路径。PLC自动化领域被年轻人视为“前景稳定、需求旺盛、晋升明确”的转行首选。",
+    "prospect": "工业4.0、中国制造2025持续推进，制造业自动化、智能化升级需求刚性；AI+工业互联网融合带来新增长点。智能制造解决方案工程师年薪可达30万以上。自动化核心岗位薪酬呈现明显上移趋势。",
+    "challenge": "需懂PLC、传感器、机器视觉等技术；客户多为工厂/制造商，决策链长（3-6个月）；需频繁出差和现场支持，对技术理解力要求高；基础执行层和核心技术岗之间薪酬分化明显。"
+  },
+  {
+    "name": "企业服务/SaaS",
+    "ideal": [
+      4.5,
+      4.5,
+      4.5,
+      4.0,
+      4.0,
+      4.0
+    ],
+    "status": "SaaS行业进入2026年处于持续失衡状态，对产品经理、增长营销人员、客户成功专家和数据驱动的销售专业人才的需求持续超过供给。中国SaaS行业遭受了前所未有的挑战，业务缩减、裁员降薪成为常态。2026年企服圈叙事彻底改变，以前聊“增长”和“续费率”，现在算的是“推理成本”和“算力ROI”。",
+    "salary": "SaaS大客户销售66.7%岗位月薪10K-20K，年薪12万-24万，2024年较2023年下降了20%。美国市场Account Executives底薪$92K-$218K，OTE中位数$190K。中国大陆SaaS销售薪资与美国差距较大。",
+    "growth": "SDR/BDR→客户经理→大客户经理→区域总监。1-3年经验月薪可达19.7K，3-5年可晋升管理岗或资深客户经理，综合年薪30-50万。",
+    "prospect": "企业数字化转型刚需，AI SaaS、垂直行业SaaS仍有增量；订阅制模式带来稳定复购收入。61%的SaaS公司正在使用或测试基于消费的商业模式，相比传统模式能带来更高收入增长。但行业增速放缓，“体系作战”取代“个人英雄”。",
+    "challenge": "B端客户线上拒绝率高达68%，获客难度大幅上升；产品同质化严重，价格竞争激烈；需懂行业know-how，不再是纯关系型销售。中国SaaS行业正面临AI带来的冲击与悲观预期。"
+  },
+  {
+    "name": "国际贸易/出海",
+    "ideal": [
+      5.0,
+      4.5,
+      4.0,
+      4.0,
+      4.0,
+      4.5
+    ],
+    "status": "2025年中国进出口总值超过45万亿元，连续第9年稳步增长。2026年前两个月出口同比暴增21.8%，远超市场预期。2026年出海全面进入“本地化深耕”阶段，从销售向全产业链延展。跨境电商从“野蛮生长”向“精细化品牌运营”转型，出海已不再是选择题，而是中国企业增长的必答题。同时，对美出口下降，但其他市场正在补偿。",
+    "salary": "外贸管培生月薪1万-1.5万元，国际销售经理1.5万-2.5万元。“海外销售的薪资差距挺大，主要看业绩，年薪百万的也有”。出海销售岗位需求从销售向全产业链延展，薪资天花板较高。",
+    "growth": "外贸业务员→外贸经理→区域总监→海外事业部总经理。3-5年经验年薪20-30万，8年以上+海外资源年薪50-100万+出海补贴。传统单证、跟单岗竞争激烈、薪资偏低，需向更高附加值岗位升级。",
+    "prospect": "中国企业出海从贸易转向生态共建，新能源、机电装备、跨境电商需求爆发。熟悉海外规则和渠道的“老手”极度稀缺，薪酬持续走高。海外销售岗位需求从销售向全产业链延展。",
+    "challenge": "需外语流利，懂跨文化谈判、国际认证、海外税务法务；时差工作、频繁海外差旅；地缘政治风险影响部分市场；要求综合能力强。同时面临传统单证岗薪资偏低、本科/研究生同岗竞争、行业受国际形势和汇率波动影响大的挑战。"
+  },
+  {
+    "name": "金融科技",
+    "ideal": [
+      4.5,
+      4.0,
+      4.5,
+      5.0,
+      4.0,
+      4.0
+    ],
+    "status": "2026年金融科技类校招需求增加100%。银行保险业开抢AI人才，AI相关金融科技岗薪资呈现清晰分层。金融科技岗位连续多年成为春招热点，2026年的关键词明确指向了人工智能。数字金融人才整体月薪酬范围24000-46000元，平均月薪酬约11000元。",
+    "salary": "AI算法工程师起薪可达45万，部分核心岗位年薪最高80万。上市地方银行曾开出最高80万年薪招聘AI高层次人才，上限水平甚至高于董监高同期薪酬。应届生近一半月薪达10000元以上，仅3%月薪低于5000元。前台岗位招聘需求同比增长12%，金融科技及量化岗位需求增幅达15%。",
+    "growth": "销售专员→客户经理→区域总监→事业部总经理。需懂金融机构业务流程，3-5年经验年薪30-50万，资深合规科技销售年薪可达80-120万。",
+    "prospect": "AI从工具升级为战略基座，智能风控、投研、营销全面AI化；银行、券商、保险数字化转型刚需。金融科技岗位要求掌握机器学习、深度学习基础知识，还需具备金融业务理解力，能构建适配投研、交易的算法模型。",
+    "challenge": "合规要求极高，决策链涉及风控、法务、IT等多部门；需懂金融业务+技术理解力，复合型人才稀缺但门槛高；行业周期受监管政策影响大。2026年金融行业已不是“随便进就能涨薪”的普惠时代，拼的是能力定薪资、赛道定输赢。"
+  },
+  {
+    "name": "教育培训ToB",
+    "ideal": [
+      4.0,
+      4.0,
+      3.5,
+      3.0,
+      4.5,
+      4.5
+    ],
+    "status": "2026年全球培训市场规模预计达1.2万亿美元，年复合增长率8.5%；中国培训市场规模突破8000亿元，职业教育和成人培训占比提升至45%。企培行业正经历一场“无声的革命”，AI正在重塑知识传递的方式，产教融合正把企业变成教育综合体，客户要的不再是课程而是结果。教育行业上演“冰与火之歌”，传统教培机构招生难、续费难、利润薄，有的校长靠卖房维持运营。",
+    "salary": "培训行业形成“金字塔式”分层结构，头部机构凭借品牌、技术与资源整合能力占据高端市场，通过构建“培训-认证-就业”闭环形成壁垒。头部机构销冠年薪可超百万，中小机构面临同质化竞争与运营成本压力。",
+    "growth": "销售专员→区域经理→大区总监→事业部总经理。1年可晋升区域主管，3-5年可独立负责区域市场，晋升速度快。但需适应从“讲课”思维向“提供结果”的转型。",
+    "prospect": "企业培训的价值逻辑已发生根本性转变，正向驱动业务增长的“战略引擎”演进。面对经费的普遍收缩，培训部门的生存法则不再是“做得更多”，而是“做得更精、更准、更深”。满足“降本增效”生存需求与“AI赋能”进化需求的双螺旋时代到来。",
+    "challenge": "决策链涉及校长、教务处长等多方，关系型销售要求高；寒暑假为旺季，节奏波动大；需了解教育行业政策变化，快速适应。传统培训模式正在失效，学习方式向“数字化、游戏化、场景化”全面升级，不具备数字化能力的销售人员面临被淘汰风险。"
+  },
+  {
+    "name": "物流/供应链",
+    "ideal": [
+      4.5,
+      4.5,
+      3.5,
+      4.0,
+      3.5,
+      4.0
+    ],
+    "status": "物流依然是一个持续增长的行业，需求并没有消失，反而在扩张。但增量正在重新分配，新的增长不再平均地落在所有岗位上，而是集中流向少数更复杂、更系统化的场景。2026年美国物流与供应链行业平均年薪达$126,400，较上年$120,600有所增长。",
+    "salary": "美国采购/采购总监和经理平均年薪$106,700，仓库经理和主管平均$86,200。国际货代熟手（1-3年）一线城市月薪8000-15000元，提成占比可达30%-40%。华东地区按上海、杭州、南京、苏州、宁波、合肥六城拆解9个典型岗位，调薪趋势与地区差异明显。",
+    "growth": "销售→销售主管→销售经理→区域总监（销售线）；专员→规划师→高级规划师→供应链经理（专业线）。入行3年年薪可达20万+。物流行业薪酬增速放缓，但从业者对未来仍持乐观态度。",
+    "prospect": "跨境电商物流需求持续增长，海外仓、专线物流、供应链优化服务需求旺盛；数字化、智能化物流是未来方向。物流行业正处于从高速扩张逐步迈向高质量、稳健增长的转型期。",
+    "challenge": "利润薄，价格竞争激烈；需懂国际物流、清关、仓储全链条；抗压能力强，客户服务要求高；行业受国际贸易政策和汇率影响大。物流人普遍面临“难跳槽、卷不赢、又躺不平”的困境。"
+  },
+  {
+    "name": "广告/营销服务",
+    "ideal": [
+      5.0,
+      4.5,
+      4.0,
+      3.0,
+      4.0,
+      5.0
+    ],
+    "status": "2026年市场对营销人才需求同比增长约23%，就业率稳定在90%以上。但广告主平均ROI持续下降，传统广告模式加速失效，营销人的职业前景正面临结构性重塑，AI与数据技能正从加分项变为生存底线。媒体行业销售薪酬面临独特挑战，组织必须应对薪酬调整的复杂性。",
+    "salary": "广告销售年薪约10万-30万元（一线城市更高）。初级广告销售（0-2年）年薪8万-15万元。应届生（一线城市）月薪6K-15K，头部互联网/快消可达12K-18K；3-5年经验（主管/经理）年薪20-40万。掌握“AI+细分技能”的复合型人才薪资涨幅可达150%。",
+    "growth": "广告销售→客户经理→销售总监→副总裁。1-3年经验可独立负责客户，3-5年可晋升管理岗，节奏快，正反馈周期短（1-2个月）。但传统营销岗位加速萎缩，需要向“超级个体”转型。",
+    "prospect": "AI驱动广告技术革新，效果营销、数据驱动的精准投放是未来方向；短视频、直播电商、KOL营销需求持续增长，但传统模式加速萎缩。“如果还抱着以前那种搞个创意、买点媒介、写份漂亮复盘报告的逻辑混日子，未来3-5年，营销人这个职业可能真的要缩水了”。",
+    "challenge": "ROI压力巨大，客户要求增长确定性而非曝光；行业竞争激烈，离职率高（超50%）；需懂数据分析和AI工具，传统关系型销售失效。2026年高校毕业生突破1270万带来的就业压力，进一步加剧了传统营销岗位的竞争。"
+  },
+  {
+    "name": "医疗设备/器械",
+    "ideal": [
+      4.0,
+      4.5,
+      4.0,
+      4.0,
+      4.5,
+      4.5
+    ],
+    "status": "中国医疗器械市场规模已超1.2万亿，专业营销人才缺口巨大。2026年医疗器械领域裁员潮与高薪抢人并行，求职者“找不到”，企业“招不到”。医疗器械行业薪资优势显著，核心岗位3-5年薪资翻倍现象普遍。",
+    "salary": "美国医疗器械销售代表底薪$68,000，OTE中位数$160,000，顶尖销售总薪酬可达$336,763。医疗行业销售人员平均年薪较普通行业高出40%-60%。硕士应届生研发岗年薪20-35万，核心专业岗15-25万。医疗健康与生命科学行业外部招聘平均薪资涨幅为15%，销售与市场专业人才薪资涨幅最高可达20%。",
+    "growth": "销售代表→区域经理→大区总监→全国销售总监。2年以上经验可晋升，5-8年可负责大区。医疗器械销售是“门槛最低、薪资天花板最高”的岗位之一，不是刻板印象里的“喝酒应酬”，而是专业价值的传递。",
+    "prospect": "老龄化+医疗新基建，设备采购需求刚性；国产替代加速，头部国产品牌份额提升；高端影像、生命支持、IVD等领域持续增长。专业营销人才缺口巨大。",
+    "challenge": "需医学背景或持续学习产品知识；决策链涉及院长、科室主任、采购科，关系型销售要求高；带量采购政策影响部分产品价格。2026年行业面临裁员与高薪抢人并行的结构性矛盾，头部企业愿意为稀缺人才支付高溢价，但基础岗位竞争激烈。"
+  },
+  {
+    "name": "汽车产业链",
+    "ideal": [
+      5.0,
+      5.0,
+      4.0,
+      3.5,
+      4.0,
+      4.5
+    ],
+    "status": "2026年汽车从业者普遍面临裁员、降薪与高强度工作的三重压力。自2024年日产开启全球裁员潮以来，全球汽车产业已削减超13万岗位，威马、高合、哪吒等品牌相继退场，员工一夜失业。价格战、内卷、裁员成为行业关键词。2025年遭遇涨薪和降薪的人各占三成，仅三成与上年持平。",
+    "salary": "汽车销售65.3%岗位月薪6-15K。新能源车企“抢人”大战中，薪资呈现明显结构性差异——研发与核心技术岗最为抢手，供应链关键岗次之，市场与销售岗更看业绩与地域。传统内燃机岗位薪资难以上涨，新能源赛道薪资越来越高。少有人经历20%以上的薪资上涨。",
+    "growth": "销售顾问→销售经理→区域总监→品牌总经理。1-3年经验月薪可达16.3K，3-5年可晋升管理岗，但行业离职率高（66%），强流动性特征。焦虑写在每个汽车人脸上——升职的如坐火山口，守业的普遍悲观。",
+    "prospect": "新能源车渗透率持续提升，智能化、电动化是未来10年主线；出海从贸易转向生态共建，海外市场空间大。但行业利润承压，普调进入“3时代”。2026年开年奇瑞传出涨薪消息，被行业视为“涨薪双休不是选择题，是生存题”。",
+    "challenge": "竞争极度激烈，价格战常态；离职率高达66%，压力大；需懂新能源技术和用户运营；行业进入存量博弈，利润空间收窄。“再换一份工作，薪资不一定涨，活却一定会更多”成为普遍心态。传统汽车人面临向新能源转型的巨大压力。"
+  }
+];
+
+const totalQuestions = groups.reduce((sum,g)=>sum + g.questions.length, 0);
+const DIM_LABELS = ['成就驱动','目标执行','分析学习','严谨审慎','关系共情','社交影响'];
+const STORAGE_KEY = 'tob_sales_fit_eval_v4_answers';
+let answers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let currentGroup = 0;
+let radarCharts = {};
+
+const landingPage = document.getElementById('landingPage');
+const quizPage = document.getElementById('quizPage');
+const resultPage = document.getElementById('resultPage');
+const moduleForm = document.getElementById('moduleForm');
+const moduleHero = document.getElementById('moduleHero');
+const moduleKicker = document.getElementById('moduleKicker');
+const moduleTitle = document.getElementById('moduleTitle');
+const moduleSub = document.getElementById('moduleSub');
+const progressText = document.getElementById('progressText');
+const progressBar = document.getElementById('progressBar');
+
+function showPage(id) {
+  [landingPage, quizPage, resultPage].forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function answeredCount() {
+  return groups.reduce((sum,g)=> sum + g.questions.filter(q => answers[q.id]).length, 0);
+}
+
+function updateProgress() {
+  const count = answeredCount();
+  progressText.textContent = `${count} / ${totalQuestions}`;
+  progressBar.style.width = `${(count / totalQuestions) * 100}%`;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+
+function renderModule(index) {
+  currentGroup = index;
+  const group = groups[index];
+  moduleHero.classList.remove('module-anim');
+  void moduleHero.offsetWidth;
+  moduleHero.classList.add('module-anim');
+
+  moduleKicker.textContent = `第 ${index + 1} 类 / 共 ${groups.length} 类`;
+  moduleTitle.textContent = group.title;
+  moduleSub.textContent = group.subtitle;
+
+  moduleForm.innerHTML = group.questions.map((q, idx) => {
+    const val = answers[q.id] || '';
+    return `
+      <div class="q-card" id="card_${q.id}">
+        <div class="q-num">Q${String(idx + 1).padStart(2,'0')} · ${group.title}</div>
+        <div class="q-text">${escapeHtml(q.text)}</div>
+        <div class="scale">
+          <span>不符合</span>
+          <div class="opts">
+            ${[1,2,3,4,5].map(n => `<button type="button" data-q="${q.id}" data-v="${n}" class="${String(val)===String(n)?'on':''}">${n}</button>`).join('')}
+          </div>
+          <span>很符合</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  moduleForm.querySelectorAll('.opts button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qid = btn.dataset.q;
+      const val = Number(btn.dataset.v);
+      answers[qid] = val;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+      document.querySelectorAll(`button[data-q="${qid}"]`).forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      document.getElementById(`card_${qid}`).style.borderColor = 'var(--line)';
+      updateProgress();
+    });
+  });
+
+  document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').textContent = index === groups.length - 1 ? '查看结果' : '下一类';
+  updateProgress();
+}
+
+function validateGroup(index) {
+  const group = groups[index];
+  const firstMiss = group.questions.find(q => !answers[q.id]);
+  if (!firstMiss) return true;
+  const card = document.getElementById(`card_${firstMiss.id}`);
+  if (card) {
+    card.style.borderColor = '#ff7d9f';
+    card.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  alert('这一类还有题目没选完，先答完再继续。');
+  return false;
+}
+
+function avg(ids) {
+  let sum = 0;
+  ids.forEach(id => {
+    let v = Number(answers[id] || 0);
+    const reverse = groups.some(g => g.questions.some(q => q.id===id && q.reverse));
+    if (reverse && v) v = 6 - v;
+    sum += v;
+  });
+  return Number((sum / ids.length).toFixed(2));
+}
+
+function getUserProfile() {
+  return [
+    avg(['D1','D2','D3','D4','D5','D6']),
+    avg(['T1','T2','T3','T4','T5','T6']),
+    avg(['A1','A2','A3','A4','A5','A6']),
+    avg(['R1','R2','R3','R4','R5','R6']),
+    avg(['E1','E2','E3','E4','E5','E6']),
+    avg(['S1','S2','S3','S4','S5','S6']),
+  ];
+}
+
+function getZone(score) {
+  if (score >= 85) return {cls:'zone-good', txt:'高度匹配'};
+  if (score >= 76) return {cls:'zone-blue', txt:'优势赛道'};
+  if (score >= 66) return {cls:'zone-mid', txt:'可入局但需补短'};
+  return {cls:'zone-warn', txt:'谨慎入局'};
+}
+
+function describeCore(ideal) {
+  return ideal
+    .map((v,i)=>({v,i}))
+    .sort((a,b)=>b.v-a.v)
+    .slice(0,3)
+    .map(item=>DIM_LABELS[item.i])
+    .join('、');
+}
+
+function describeGap(user, ideal) {
+  return ideal
+    .map((v,i)=>({gap: v - user[i], i}))
+    .sort((a,b)=>b.gap-a.gap)
+    .filter(x => x.gap > 0.45)
+    .slice(0,2)
+    .map(x => DIM_LABELS[x.i]);
+}
+
+function describeMatch(user, ideal) {
+  const arr = ideal
+    .map((v,i)=>({fit: user[i] - v, ideal:v, i}))
+    .filter(x => x.fit >= -0.2 || (x.ideal >= 4 && x.fit >= -0.35))
+    .sort((a,b)=>(b.ideal + b.fit) - (a.ideal + a.fit))
+    .slice(0,3)
+    .map(x => DIM_LABELS[x.i]);
+  return arr;
+}
+
+function describeFitNote(user, ideal) {
+  const good = describeMatch(user, ideal);
+  const gap = describeGap(user, ideal);
+  const goodText = good.length ? good.join('、') : '当前暂无特别突出的贴合维度';
+  const gapText = gap.length ? gap.join('、') : '当前没有特别明显的短板';
+  return `
+    <span class="match-line">匹配点：<span class="good-txt">${goodText}</span></span>
+    <span class="match-line">待补点：<span class="gap-txt">${gapText}</span></span>
+  `;
+}
+
+function getIndustryAdvice(name) {
+  const map = {
+    '半导体/硬科技': {
+      job: '适合先看：销售工程师、FAE协同销售、区域客户经理。',
+      trans: '转入前优先补：技术理解、方案表达、与工程师对话能力。'
+    },
+    '云/AI/软件': {
+      job: '适合先看：SDR/BDR、客户经理、行业解决方案销售。',
+      trans: '转入前优先补：行业场景理解、价值表达、演示沟通能力。'
+    },
+    '新能源/储能': {
+      job: '适合先看：销售工程师、海外销售、项目型客户经理。',
+      trans: '转入前优先补：项目周期意识、认证/交付知识、跨文化沟通。'
+    },
+    '互联网商业化': {
+      job: '适合先看：商业化销售、广告客户经理、商务拓展。',
+      trans: '转入前优先补：ROI意识、提案表达、快节奏推进能力。'
+    },
+    '生物医药': {
+      job: '适合先看：医药代表、学术推广、区域客户经理。',
+      trans: '转入前优先补：合规意识、专业学习、长期关系维护。'
+    },
+    '智能制造/工业自动化': {
+      job: '适合先看：销售工程师、区域经理、解决方案销售。',
+      trans: '转入前优先补：自动化基础、现场沟通、长链路项目跟进。'
+    },
+    '企业服务/SaaS': {
+      job: '适合先看：SDR/BDR、AE、客户成功转销售岗位。',
+      trans: '转入前优先补：行业know-how、价值销售、复盘能力。'
+    },
+    '国际贸易/出海': {
+      job: '适合先看：外贸业务员、海外销售、区域渠道经理。',
+      trans: '转入前优先补：英语/小语种、跨文化谈判、规则意识。'
+    },
+    '金融科技': {
+      job: '适合先看：金融机构客户经理、合规科技销售、方案销售。',
+      trans: '转入前优先补：金融流程理解、合规意识、复杂客户推进。'
+    },
+    '教育培训ToB': {
+      job: '适合先看：企培销售、区域经理、解决方案顾问型销售。',
+      trans: '转入前优先补：需求洞察、课程价值表达、校方沟通。'
+    },
+    '物流/供应链': {
+      job: '适合先看：货代销售、供应链客户经理、区域BD。',
+      trans: '转入前优先补：全链路理解、报价与交付意识、客户服务韧性。'
+    },
+    '广告/营销服务': {
+      job: '适合先看：广告销售、客户经理、增长商务岗位。',
+      trans: '转入前优先补：数据意识、提案呈现、客户增长语言。'
+    },
+    '医疗设备/器械': {
+      job: '适合先看：器械销售代表、区域经理、学术型销售。',
+      trans: '转入前优先补：产品学习、医院决策链理解、专业表达。'
+    },
+    '汽车产业链': {
+      job: '适合先看：大客户销售、区域销售经理、渠道拓展。',
+      trans: '转入前优先补：产业链理解、价格谈判、高压环境稳定度。'
+    }
+  };
+  return map[name] || { job: '适合先看：客户经理、销售工程师、区域销售等基础切入口。', trans: '转入前优先补：行业理解、表达能力和真实项目经验。' };
+}
+
+function getTopSummary(user, scored) {
+  const topDims = user.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>DIM_LABELS[x.i]);
+  const lowDims = user.map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v).slice(0,2).map(x=>DIM_LABELS[x.i]);
+  return { topDims, lowDims, first: scored[0] };
+}
+
+function scoreIndustry(user, ind) {
+  let total = 0;
+  let weightSum = 0;
+  let criticalPenalty = 0;
+  ind.ideal.forEach((idealVal, i) => {
+    const userVal = user[i];
+    const diff = idealVal - userVal;
+    const weight = 1 + Math.max(0, idealVal - 3);
+    let dimScore = 100 - (diff > 0 ? diff * 22 : Math.abs(diff) * 8);
+    dimScore = Math.max(0, Math.min(100, dimScore));
+    total += dimScore * weight;
+    weightSum += weight;
+    if (idealVal >= 4.5 && userVal < 3.4) {
+      criticalPenalty += (3.4 - userVal) * 8;
+    }
+  });
+  const score = Math.max(40, (total / weightSum) - criticalPenalty);
+  return Number(score.toFixed(1));
+}
+
+function makeCard(ind, rank, user, expanded=false) {
+  const score = ind.score;
+  const zone = getZone(score);
+  const gaps = describeGap(user, ind.ideal);
+  const gapsText = gaps.length ? gaps.join('、') : '当前短板不明显，可优先验证行业兴趣和实际项目经验。';
+  const advice = getIndustryAdvice(ind.name);
+  const fitNote = describeFitNote(user, ind.ideal);
+  return `
+    <article class="result-card ${zone.cls}">
+      <div class="zone-head">
+        <div>
+          <div style="color:var(--sub);font-weight:900;font-size:.92rem;">TOP ${rank}</div>
+          <div class="zone-title">${ind.name}</div>
+          <div class="big-score">${score} 分</div>
+        </div>
+        <div class="badge">${zone.txt}</div>
+      </div>
+      <div class="card-body">
+        <div class="section-hint">核心更看重：<b>${describeCore(ind.ideal)}</b>${fitNote}</div>
+        <div id="detail_${rank}" class="hidden-area ${expanded ? 'show' : ''}">
+          <div class="chart-wrap"><canvas id="radar_${rank}"></canvas></div>
+          <div class="result-subgrid">
+            <div class="note-card"><b>适合先看岗位</b><div>${advice.job}</div></div>
+            <div class="note-card"><b>切入建议</b><div>${advice.trans}</div></div>
+          </div>
+          <div class="info">
+            <div class="info-block"><b>行业现状</b><p>${ind.status}</p></div>
+            <div class="info-block"><b>薪酬水平</b><p>${ind.salary}</p></div>
+            <div class="info-block"><b>晋升路径</b><p>${ind.growth}</p></div>
+            <div class="info-block"><b>发展前景</b><p>${ind.prospect}</p></div>
+            <div class="info-block"><b>入局挑战</b><p>${ind.challenge}</p></div>
+            <div class="info-block"><b>优先补强</b><p>${gapsText}</p></div>
+          </div>
+        </div>
+      </div>
+      <button class="card-toggle" type="button" onclick="toggleCard('detail_${rank}', this)">
+        ${expanded ? '收起详细解析' : '展开详细解析与六维对照图'}
+      </button>
+    </article>
+  `;
+}
+
+function renderResults() {
+  const userName = (document.getElementById('userName').value || '你').trim() || '你';
+  const user = getUserProfile();
+  const scored = industries.map(ind => ({...ind, score: scoreIndustry(user, ind)})).sort((a,b)=>b.score-a.score);
+  const summary = getTopSummary(user, scored);
+
+  resultPage.innerHTML = `
+    <div class="result-head">
+      <div class="result-name">${escapeHtml(userName)} 的测评结果</div>
+      <div class="result-title">更适合优先尝试的 ToB 行业</div>
+      <div class="top-industry">首推赛道：${scored[0].name}</div>
+      <div class="summary-grid">
+        <div class="stat-card"><div class="stat-label">最高匹配</div><div class="stat-value">${scored[0].score} 分</div></div>
+        <div class="stat-card"><div class="stat-label">推荐区间</div><div class="stat-value">${getZone(scored[0].score).txt}</div></div>
+        <div class="stat-card"><div class="stat-label">题目数量</div><div class="stat-value">${totalQuestions} 题</div></div>
+      </div>
+      <div class="tip-list">
+        <div class="tip-chip"><b>你当前更突出的维度：</b>${summary.topDims.join('、')}</div>
+        <div class="tip-chip"><b>优先留意的补强方向：</b>${summary.lowDims.join('、')}</div>
+        <div class="tip-chip"><b>使用建议：</b>先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</div>
+      </div>
+      <p class="section-hint" style="margin-top:12px;">说明：这是基于职业兴趣与人格维度构建的行业适配参考结果，用来帮助你做赛道优先级排序，不替代正式的人才测评或面试评估。</p>
+    </div>
+
+    <div class="fold-title">最推荐优先看的 3 个行业</div>
+    ${scored.slice(0,3).map((ind,idx)=>makeCard(ind, idx+1, user, true)).join('')}
+    <div class="fold-title">其余 11 个行业</div>
+    ${scored.slice(3).map((ind,idx)=>makeCard(ind, idx+4, user, false)).join('')}
+    <div class="result-actions">
+      <button class="primary-btn" id="saveReportBtn" type="button" onclick="saveLongImage()">一键保存长图报告</button>
+      <button class="ghost-btn" type="button" onclick="backToLanding()">重新测评</button>
+    </div>
+    <div class="tiny-note">测评结果仅供参考，最终选择请结合自身兴趣与市场机会</div>
+  `;
+  showPage('resultPage');
+
+  scored.forEach((ind, idx) => renderRadar(`radar_${idx+1}`, user, ind.ideal));
+}
+
+function renderRadar(id, user, ideal) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  if (radarCharts[id]) radarCharts[id].destroy();
+  radarCharts[id] = new Chart(canvas, {
+    type:'radar',
+    data:{
+      labels:DIM_LABELS,
+      datasets:[
+        {
+          label:'你的画像',
+          data:user,
+          borderColor:'#7b61ff',
+          backgroundColor:'rgba(123,97,255,.16)',
+          pointBackgroundColor:'#7b61ff',
+          pointRadius:3,
+          borderWidth:2
+        },
+        {
+          label:'行业画像',
+          data:ideal,
+          borderColor:'#ff6c9a',
+          backgroundColor:'rgba(255,108,154,.08)',
+          pointBackgroundColor:'#ff6c9a',
+          pointRadius:2.6,
+          borderDash:[6,5],
+          borderWidth:2
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'top', labels:{ boxWidth:12, usePointStyle:true, font:{size:11, weight:'700'} } }
+      },
+      scales:{
+        r:{
+          min:1, max:5,
+          angleLines:{ color:'rgba(123,97,255,.13)' },
+          grid:{ color:'rgba(123,97,255,.13)' },
+          pointLabels:{ color:'#516079', font:{ size:11, weight:'700' } },
+          ticks:{ stepSize:1, backdropColor:'transparent', color:'#8a94a8', showLabelBackdrop:false }
+        }
+      }
+    }
+  });
+}
+
+window.toggleCard = function(id, btn) {
+  const box = document.getElementById(id);
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? '收起详细解析' : '展开详细解析与六维对照图';
+};
+
+window.saveLongImage = async function() {
+  const btn = document.getElementById('saveReportBtn');
+  if (btn) {
+    btn.classList.add('save-loading');
+    btn.textContent = '正在生成长图...';
+  }
+  try {
+    const node = document.getElementById('captureArea');
+    const canvas = await html2canvas(node, {
+      backgroundColor: '#f6f3ff',
+      scale: Math.min(window.devicePixelRatio || 2, 2),
+      useCORS: true,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight
+    });
+    const link = document.createElement('a');
+    const userName = (document.getElementById('userName').value || 'ToB销售行业适配度评估').trim() || 'ToB销售行业适配度评估';
+    link.download = `${userName}_ToB销售行业适配度评估.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (e) {
+    alert('长图生成失败，请稍后重试。');
+  } finally {
+    if (btn) {
+      btn.classList.remove('save-loading');
+      btn.textContent = '一键保存长图报告';
+    }
+  }
+};
+
+window.backToLanding = function() {
+  showPage('landingPage');
+};
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  showPage('quizPage');
+  renderModule(0);
+});
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (currentGroup > 0) renderModule(currentGroup - 1);
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if (!validateGroup(currentGroup)) return;
+  if (currentGroup < groups.length - 1) {
+    renderModule(currentGroup + 1);
+  } else {
+    renderResults();
+  }
+});
+
+// initialize progress for persisted answers
+updateProgress();
+</script>
+</body>
+</html>
