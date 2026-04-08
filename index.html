@@ -284,8 +284,8 @@ body {
   border:1px solid #e9defe; border-radius:16px; padding:12px 14px; word-break:break-word; overflow-wrap:anywhere;
 }
 .section-hint .match-line { display:block; margin-top:4px; }
-.section-hint .good-txt { color:#4f46e5; font-weight:900; background:rgba(59,130,246,.10); padding:2px 8px; border-radius:10px; }
-.section-hint .gap-txt { color:#ec4899; font-weight:900; background:rgba(236,72,153,.10); padding:2px 8px; border-radius:10px; }
+.section-hint .good-txt { color:#4263d6; font-weight:900; background:rgba(66,99,214,.10); padding:2px 8px; border-radius:10px; }
+.section-hint .gap-txt { color:#d66aa0; font-weight:900; background:rgba(214,106,160,.12); padding:2px 8px; border-radius:10px; }
 .fold-title {
   font-size:1.15rem; font-weight:950; margin:18px 4px 12px;
 }
@@ -318,13 +318,18 @@ body {
   color:#405067; font-size:.95rem; line-height:1.75; box-shadow:0 8px 18px rgba(123,97,255,.05);
 }
 .tip-chip .tip-key { display:inline-block; margin-right:8px; padding:7px 10px; border-radius:12px; font-weight:950; }
-.tip-chip.tip-strong { background:linear-gradient(180deg,#f2f8ff,#ffffff); border-color:#bfe2ff; }
-.tip-chip.tip-strong .tip-key { background:linear-gradient(135deg,#dff1ff,#cbe8ff); color:#1f78c8; }
-.tip-chip.tip-gap { background:linear-gradient(180deg,#f5fbff,#ffffff); border-color:#cfe9ff; }
-.tip-chip.tip-gap .tip-key { background:linear-gradient(135deg,#e4f4ff,#d5efff); color:#256fbf; }
-.tip-chip.tip-suggest { background:linear-gradient(180deg,#f7fbff,#ffffff); border-color:#d9ecff; }
-.tip-chip.tip-suggest .tip-key { background:linear-gradient(135deg,#e9f5ff,#dff1ff); color:#2b76c7; }
+.tip-chip.tip-strong { background:linear-gradient(180deg,#f2f7ff,#ffffff); border-color:#c7dafc; }
+.tip-chip.tip-strong .tip-key { background:linear-gradient(135deg,#e7efff,#dbe7ff); color:#4b61c8; }
+.tip-chip.tip-gap { background:linear-gradient(180deg,#fff7fb,#ffffff); border-color:#f0d7e6; }
+.tip-chip.tip-gap .tip-key { background:linear-gradient(135deg,#fde8f1,#f8ddea); color:#c16292; }
+.tip-chip.tip-suggest { background:linear-gradient(180deg,#f8f7ff,#ffffff); border-color:#ddd8ff; }
+.tip-chip.tip-suggest .tip-key { background:linear-gradient(135deg,#ece8ff,#e1dbff); color:#6752c7; }
 .result-subgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0 10px; }
+.focus-value{font-weight:950;}
+.focus-blue{color:#4b61c8;background:rgba(75,97,200,.08);padding:2px 8px;border-radius:10px;}
+.focus-pink{color:#c16292;background:rgba(193,98,146,.10);padding:2px 8px;border-radius:10px;}
+.focus-violet{color:#6752c7;background:rgba(103,82,199,.08);padding:2px 8px;border-radius:10px;}
+
 .note-card { background:linear-gradient(180deg, rgba(237,242,255,.95), rgba(255,255,255,.98)); border:1px solid #d9e6ff; border-radius:20px; padding:14px 14px; box-shadow:0 10px 20px rgba(59,130,246,.06); }
 .note-card b { display:inline-block; margin-bottom:8px; font-size:.96rem; padding:6px 10px; border-radius:12px; background:linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1d4ed8; box-shadow:0 4px 10px rgba(59,130,246,.14); }
 .note-card div { color:#405067; line-height:1.72; }
@@ -334,9 +339,9 @@ body {
   background:linear-gradient(180deg,#fff, #faf8ff); box-shadow:0 10px 20px rgba(123,97,255,.05);
 }
 .user-model-title { font-size:1rem; font-weight:950; color:#312e81; margin-bottom:10px; }
-.user-model-grid { display:grid; grid-template-columns:300px 1fr; gap:14px; align-items:center; }
-.user-chart-box { position:relative; height:250px; border:1px dashed #ddd8ff; border-radius:18px; padding:10px; background:linear-gradient(135deg, rgba(123,97,255,.05), rgba(255,95,148,.03)); }
-.dim-badges { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.user-model-grid { display:grid; grid-template-columns:1fr; gap:14px; align-items:start; }
+.user-chart-box { position:relative; height:320px; border:1px dashed #ddd8ff; border-radius:18px; padding:12px; background:linear-gradient(135deg, rgba(123,97,255,.05), rgba(255,95,148,.03)); }
+.dim-badges { display:none; }
 .dim-badge { border-radius:16px; padding:12px 12px; border:1px solid #e4ddff; background:#fff; }
 .dim-badge .dim-name { font-size:.9rem; color:#67748c; font-weight:800; margin-bottom:6px; }
 .dim-badge .dim-score { font-size:1.28rem; color:#1f2a44; font-weight:950; }
@@ -355,6 +360,7 @@ body {
   .module-title { font-size:1.78rem; }
   .summary-grid { grid-template-columns:1fr; }
   .result-actions, .result-subgrid, .user-model-grid, .dim-badges { grid-template-columns:1fr; }
+  .user-chart-box { height:300px; }
   .scale-top { grid-template-columns:42px minmax(0,1fr) 42px; gap:6px; }
   .scale-top span { font-size:.72rem; color:#66748a; }
   .opts { gap:6px; }
@@ -1193,18 +1199,12 @@ function renderResults() {
         <div class="user-model-title">你的六维模型结果</div>
         <div class="user-model-grid">
           <div class="user-chart-box"><canvas id="userRadar"></canvas></div>
-          <div class="dim-badges">${user.map((v,i)=>{
-            const isTop = summary.topDims.includes(DIM_LABELS[i]);
-            const isLow = summary.lowDims.includes(DIM_LABELS[i]);
-            const cls = isTop ? 'top' : (isLow ? 'low' : '');
-            return `<div class="dim-badge ${cls}"><div class="dim-name">${DIM_LABELS[i]}</div><div class="dim-score">${v.toFixed(1)} 分</div></div>`;
-          }).join('')}</div>
         </div>
       </div>
       <div class="tip-list">
-        <div class="tip-chip tip-strong"><span class="tip-key">突出维度</span>${summary.topDims.join('、')}</div>
-        <div class="tip-chip tip-gap"><span class="tip-key">补强方向</span>${summary.lowDims.join('、')}</div>
-        <div class="tip-chip tip-suggest"><span class="tip-key">使用建议</span>先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</div>
+        <div class="tip-chip tip-strong"><span class="tip-key">突出维度</span><span class="focus-value focus-blue">${summary.topDims.join('、')}</span></div>
+        <div class="tip-chip tip-gap"><span class="tip-key">补强方向</span><span class="focus-value focus-pink">${summary.lowDims.join('、')}</span></div>
+        <div class="tip-chip tip-suggest"><span class="tip-key">使用建议</span><span class="focus-value focus-violet">先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</span></div>
       </div>
       <div class="report-basis">
         <div class="basis-tag">测评依据与结果说明</div>
@@ -1238,7 +1238,7 @@ function renderUserRadar(id, user) {
   radarCharts[id] = new Chart(canvas, {
     type:'radar',
     data:{
-      labels:DIM_LABELS,
+      labels:DIM_LABELS.map((label, i) => [label, `${user[i].toFixed(1)}分`]),
       datasets:[{
         label:'你的六维模型',
         data:user,
@@ -1374,9 +1374,9 @@ window.saveLongImage = async function() {
           </div>
         </div>
         <div class="tip-list">
-          <div class="tip-chip tip-strong"><span class="tip-key">突出维度</span>${summary.topDims.join('、')}</div>
-          <div class="tip-chip tip-gap"><span class="tip-key">补强方向</span>${summary.lowDims.join('、')}</div>
-          <div class="tip-chip tip-suggest"><span class="tip-key">使用建议</span>先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</div>
+          <div class="tip-chip tip-strong"><span class="tip-key">突出维度</span><span class="focus-value focus-blue">${summary.topDims.join('、')}</span></div>
+          <div class="tip-chip tip-gap"><span class="tip-key">补强方向</span><span class="focus-value focus-pink">${summary.lowDims.join('、')}</span></div>
+          <div class="tip-chip tip-suggest"><span class="tip-key">使用建议</span><span class="focus-value focus-violet">先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</span></div>
         </div>
         <div class="report-basis">
           <div class="basis-tag">测评依据与结果说明</div>
