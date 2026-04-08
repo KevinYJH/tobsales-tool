@@ -44,7 +44,7 @@ body {
   border:1px solid rgba(255,255,255,.85);
   border-radius:28px;
   box-shadow:var(--shadow);
-  overflow:hidden;
+  overflow:visible;
   backdrop-filter:blur(18px);
 }
 .topbar {
@@ -119,14 +119,20 @@ body {
 .mini-note {
   margin-top:12px; font-size:.9rem; color:#8793a8; line-height:1.7;
 }
+.quiz-sticky {
+  position:sticky; top:0; z-index:30;
+  padding-top:4px; margin-bottom:10px;
+  background:linear-gradient(180deg, rgba(248,243,255,.96), rgba(248,243,255,.86) 72%, rgba(248,243,255,0));
+  backdrop-filter:blur(10px);
+}
 .progress-wrap {
-  position:sticky; top:10px; z-index:8;
-  background:rgba(255,255,255,.86);
+  background:rgba(255,255,255,.92);
   border:1px solid var(--line);
   border-radius:20px;
   padding:14px;
-  margin-bottom:14px;
+  margin-bottom:10px;
   backdrop-filter:blur(12px);
+  box-shadow:0 8px 20px rgba(123,97,255,.08);
 }
 .progress-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
 .progress-row strong { font-size:1rem; }
@@ -140,8 +146,12 @@ body {
   border-radius:999px; transition:width .25s ease;
 }
 .module-hero {
-  padding:12px 4px 6px;
+  padding:12px 6px 8px;
   text-align:left;
+  background:rgba(255,255,255,.82);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 8px 20px rgba(123,97,255,.06);
 }
 .module-kicker {
   font-size:.92rem; color:var(--pri); font-weight:900; letter-spacing:.5px;
@@ -175,14 +185,17 @@ body {
   font-size:1.08rem; line-height:1.7; font-weight:900; margin-bottom:16px;
 }
 .scale {
-  display:grid; grid-template-columns:58px 1fr 58px; align-items:center; gap:8px;
+  display:flex; flex-direction:column; gap:10px;
 }
-.scale span {
-  color:#9aa4b8; font-size:.92rem; font-weight:800;
+.scale-labels {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
 }
-.scale span:last-child { text-align:right; }
+.scale-labels span {
+  color:#9aa4b8; font-size:.92rem; font-weight:800; line-height:1.2;
+  flex:0 0 auto;
+}
 .opts {
-  display:flex; justify-content:center; gap:10px;
+  display:flex; justify-content:center; gap:10px; flex-wrap:nowrap;
 }
 .opts button {
   width:46px; height:46px; border-radius:50%;
@@ -295,13 +308,14 @@ body {
 @media (max-width:640px) {
   body { padding:10px; }
   .topbar { padding:20px 16px 8px; }
-  .content { padding:14px 16px 20px; }
+  .content { padding:14px 14px 20px; }
   .hero-title { font-size:2.35rem; max-width:9em; }
   .module-title { font-size:1.78rem; }
   .summary-grid { grid-template-columns:1fr; }
   .result-actions, .result-subgrid { grid-template-columns:1fr; }
-  .scale { grid-template-columns:42px 1fr 42px; }
-  .opts button { width:42px; height:42px; }
+  .scale-labels span { font-size:.84rem; }
+  .opts { gap:8px; }
+  .opts button { width:40px; height:40px; font-size:1rem; }
   .chart-wrap { height:260px; }
   .nav-row { grid-template-columns:1fr 1fr; }
 }
@@ -320,23 +334,25 @@ body {
       <div class="panel">
         <label class="field-label" for="userName">先输入一个称呼</label>
         <input id="userName" class="input" maxlength="14" placeholder="例如：韩主任 / 小李 / 转行选手">
-        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告，并默认展开最推荐的 3 个行业。</div>
+        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告，并展示 14 个行业的匹配报告。</div>
       </div>
       <button id="startBtn" class="primary-btn">正式开始</button>
     </section>
 
     <section id="quizPage" class="page">
-      <div class="progress-wrap">
-        <div class="progress-row">
-          <strong id="progressLabel">作答进度</strong>
-          <span id="progressText">0 / 36</span>
+      <div class="quiz-sticky">
+        <div class="progress-wrap">
+          <div class="progress-row">
+            <strong id="progressLabel">作答进度</strong>
+            <span id="progressText">0 / 36</span>
+          </div>
+          <div class="track"><div id="progressBar" class="bar"></div></div>
         </div>
-        <div class="track"><div id="progressBar" class="bar"></div></div>
-      </div>
-      <div id="moduleHero" class="module-hero module-anim">
-        <div class="module-kicker" id="moduleKicker">第 1 类 / 共 6 类</div>
-        <div class="module-title" id="moduleTitle">成就驱动</div>
-        <div class="module-sub" id="moduleSub"></div>
+        <div id="moduleHero" class="module-hero module-anim">
+          <div class="module-kicker" id="moduleKicker">第 1 类 / 共 6 类</div>
+          <div class="module-title" id="moduleTitle">成就驱动</div>
+          <div class="module-sub" id="moduleSub"></div>
+        </div>
       </div>
       <form id="moduleForm"></form>
       <div class="nav-row">
@@ -855,6 +871,7 @@ function renderModule(index) {
   moduleKicker.textContent = `第 ${index + 1} 类 / 共 ${groups.length} 类`;
   moduleTitle.textContent = group.title;
   moduleSub.textContent = group.subtitle;
+  scrollViewportTop();
 
   moduleForm.innerHTML = group.questions.map((q, idx) => {
     const val = answers[q.id] || '';
@@ -1127,7 +1144,7 @@ function renderResults() {
     </div>
 
     <div class="fold-title">最推荐优先看的 3 个行业</div>
-    ${scored.slice(0,3).map((ind,idx)=>makeCard(ind, idx+1, user, true)).join('')}
+    ${scored.slice(0,3).map((ind,idx)=>makeCard(ind, idx+1, user, false)).join('')}
     <div class="fold-title">其余 11 个行业</div>
     ${scored.slice(3).map((ind,idx)=>makeCard(ind, idx+4, user, false)).join('')}
     <div class="result-actions">
@@ -1235,6 +1252,7 @@ window.backToLanding = function() {
 document.getElementById('startBtn').addEventListener('click', () => {
   showPage('quizPage');
   renderModule(0);
+  scrollViewportTop();
 });
 
 document.getElementById('prevBtn').addEventListener('click', () => {
