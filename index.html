@@ -294,23 +294,22 @@ body {
 .tiny-note { margin:14px auto 0; max-width:28em; padding:12px 14px; font-size:.86rem; color:#7b879b; line-height:1.8; text-align:center; background:rgba(255,255,255,.8); border:1px solid var(--line); border-radius:16px; }
 
 .report-basis {
-  margin-top:14px;
-  padding:16px 18px;
-  border-radius:20px;
-  border:1px solid #d6ebff;
-  background:linear-gradient(180deg,#f6fbff,#ffffff);
-  color:#55708f;
+  margin-top:18px;
+  padding:0 2px;
+  border:none;
+  background:transparent;
+  color:#8f98a8;
   line-height:1.9;
-  font-size:.96rem;
+  font-size:.84rem;
 }
-.report-basis b { color:#1f2a44; }
+.report-basis b { color:#6f7b8f; font-weight:900; }
 .report-basis .basis-tag {
-  display:inline-flex; align-items:center; gap:8px; margin-bottom:8px;
-  padding:8px 12px; border-radius:999px; font-weight:900;
-  background:linear-gradient(135deg,#e4f4ff,#d5efff); color:#1f78c8;
+  display:block; margin-bottom:8px;
+  font-size:.84rem; font-weight:900; color:#7f8aa0;
 }
+.nowrap { white-space:nowrap; }
 .export-snapshot { max-width:1180px; }
-.export-snapshot .result-actions, .export-snapshot .fold-title.other-group, .export-snapshot .other-group-wrap, .export-snapshot .tiny-note { display:none !important; }
+.export-snapshot .result-actions, .export-snapshot .fold-title.other-group, .export-snapshot .other-group-wrap, .export-snapshot .tiny-note, .export-snapshot .report-basis { display:none !important; }
 
 .tip-list { display:grid; gap:10px; margin-top:14px; }
 .tip-chip {
@@ -334,21 +333,14 @@ body {
 .note-card b { display:inline-block; margin-bottom:8px; font-size:.96rem; padding:6px 10px; border-radius:12px; background:linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1d4ed8; box-shadow:0 4px 10px rgba(59,130,246,.14); }
 .note-card div { color:#405067; line-height:1.72; }
 
+/* 专门修改主雷达图容器的高度，预留多行文字空间 */
 .user-model-card {
   margin:14px 0 16px; border:1px solid #ddd8ff; border-radius:22px; padding:14px;
   background:linear-gradient(180deg,#fff, #faf8ff); box-shadow:0 10px 20px rgba(123,97,255,.05);
 }
 .user-model-title { font-size:1rem; font-weight:950; color:#312e81; margin-bottom:10px; }
 .user-model-grid { display:grid; grid-template-columns:1fr; gap:14px; align-items:start; }
-.user-chart-box { position:relative; height:320px; border:1px dashed #ddd8ff; border-radius:18px; padding:12px; background:linear-gradient(135deg, rgba(123,97,255,.05), rgba(255,95,148,.03)); }
-.dim-badges { display:none; }
-.dim-badge { border-radius:16px; padding:12px 12px; border:1px solid #e4ddff; background:#fff; }
-.dim-badge .dim-name { font-size:.9rem; color:#67748c; font-weight:800; margin-bottom:6px; }
-.dim-badge .dim-score { font-size:1.28rem; color:#1f2a44; font-weight:950; }
-.dim-badge.top { background:linear-gradient(180deg,#f3f9ff,#ffffff); border-color:#bfe2ff; }
-.dim-badge.top .dim-name { color:#1f78c8; }
-.dim-badge.low { background:linear-gradient(180deg,#f8fbff,#ffffff); border-color:#cfe9ff; }
-.dim-badge.low .dim-name { color:#2b76c7; }
+.user-chart-box { position:relative; height:360px; border:1px dashed #ddd8ff; border-radius:18px; padding:10px; background:linear-gradient(135deg, rgba(123,97,255,.05), rgba(255,95,148,.03)); overflow:hidden; }
 
 .save-loading { opacity:.7; pointer-events:none; }
 
@@ -359,14 +351,14 @@ body {
   .hero-title { font-size:2.35rem; max-width:9em; }
   .module-title { font-size:1.78rem; }
   .summary-grid { grid-template-columns:1fr; }
-  .result-actions, .result-subgrid, .user-model-grid, .dim-badges { grid-template-columns:1fr; }
-  .user-chart-box { height:300px; }
+  .result-actions, .result-subgrid, .user-model-grid { grid-template-columns:1fr; }
+  .user-chart-box { height:300px; padding:8px; }
+  .report-basis { font-size:.8rem; line-height:1.85; }
   .scale-top { grid-template-columns:42px minmax(0,1fr) 42px; gap:6px; }
   .scale-top span { font-size:.72rem; color:#66748a; }
   .opts { gap:6px; }
   .opts button { width:38px; height:38px; font-size:.98rem; }
   .chart-wrap { height:260px; }
-  .user-chart-box { height:230px; }
   .nav-row { grid-template-columns:1fr 1fr; }
   .result-name { font-size:.96rem; padding:7px 11px; }
   .tiny-note { font-size:.82rem; padding:10px 12px; }
@@ -418,13 +410,13 @@ body {
 </div>
 
 <script>
-const groups = [
+const groups =[
   {
     "id": "drive",
     "title": "成就驱动",
     "subtitle": "看你是否愿意主动争取结果、承担目标压力，参考职业兴趣中的企业型倾向与成就追求。",
     "ref": "参考：RIASEC 企业型倾向 + 成就动机",
-    "questions": [
+    "questions":[
       {
         "id": "D1",
         "text": "看到明确结果目标时，我通常会更想冲一把，而不是先退一步。",
@@ -462,7 +454,7 @@ const groups = [
     "title": "目标执行",
     "subtitle": "看你是否能把目标拆成步骤并持续推进，参考尽责性中的自律、持续性与执行控制。",
     "ref": "参考：Big Five 尽责性（自律 / 持续推进）",
-    "questions": [
+    "questions":[
       {
         "id": "T1",
         "text": "接到任务后，我通常会先拆步骤、排节点，再真正开始推进。",
@@ -500,7 +492,7 @@ const groups = [
     "title": "分析学习",
     "subtitle": "看你是否愿意理解复杂逻辑、验证信息并持续学习，参考开放性中的求知、理解与抽象思考。",
     "ref": "参考：Big Five 开放性（求知 / 理解复杂性）",
-    "questions": [
+    "questions":[
       {
         "id": "A1",
         "text": "接触一个陌生行业时，我愿意先花时间把它的业务逻辑搞明白。",
@@ -538,7 +530,7 @@ const groups = [
     "title": "严谨审慎",
     "subtitle": "看你对细节、风险与错误的敏感度，参考尽责性中的有序性与审慎决策倾向。",
     "ref": "参考：Big Five 尽责性（有序 / 审慎）",
-    "questions": [
+    "questions":[
       {
         "id": "R1",
         "text": "提交重要材料前，我通常会主动复查细节，尽量避免低级错误。",
@@ -576,7 +568,7 @@ const groups = [
     "title": "关系共情",
     "subtitle": "看你是否能感知他人需求、建立信任并维持长期关系，参考宜人性中的共情与合作倾向。",
     "ref": "参考：Big Five 宜人性（共情 / 合作）",
-    "questions": [
+    "questions":[
       {
         "id": "E1",
         "text": "和人沟通时，我通常能比较快抓到对方真正关心的点。",
@@ -614,7 +606,7 @@ const groups = [
     "title": "社交影响",
     "subtitle": "看你在陌生关系中开口、表达、主导和影响他人的倾向，参考外向性中的主动表达与自信。",
     "ref": "参考：Big Five 外向性（主动表达 / 影响）",
-    "questions": [
+    "questions":[
       {
         "id": "S1",
         "text": "在陌生人较多的场合里，我通常能比较自然地先开口破冰。",
@@ -648,10 +640,10 @@ const groups = [
     ]
   }
 ];
-const industries = [
+const industries =[
   {
     "name": "半导体/硬科技",
-    "ideal": [
+    "ideal":[
       4.0,
       4.0,
       5.0,
@@ -667,7 +659,7 @@ const industries = [
   },
   {
     "name": "云/AI/软件",
-    "ideal": [
+    "ideal":[
       4.5,
       4.5,
       4.5,
@@ -683,7 +675,7 @@ const industries = [
   },
   {
     "name": "新能源/储能",
-    "ideal": [
+    "ideal":[
       5.0,
       5.0,
       4.0,
@@ -699,7 +691,7 @@ const industries = [
   },
   {
     "name": "互联网商业化",
-    "ideal": [
+    "ideal":[
       5.0,
       4.5,
       4.0,
@@ -715,7 +707,7 @@ const industries = [
   },
   {
     "name": "生物医药",
-    "ideal": [
+    "ideal":[
       4.0,
       4.0,
       4.0,
@@ -731,7 +723,7 @@ const industries = [
   },
   {
     "name": "智能制造/工业自动化",
-    "ideal": [
+    "ideal":[
       4.0,
       4.5,
       4.0,
@@ -747,7 +739,7 @@ const industries = [
   },
   {
     "name": "企业服务/SaaS",
-    "ideal": [
+    "ideal":[
       4.5,
       4.5,
       4.5,
@@ -763,7 +755,7 @@ const industries = [
   },
   {
     "name": "国际贸易/出海",
-    "ideal": [
+    "ideal":[
       5.0,
       4.5,
       4.0,
@@ -779,7 +771,7 @@ const industries = [
   },
   {
     "name": "金融科技",
-    "ideal": [
+    "ideal":[
       4.5,
       4.0,
       4.5,
@@ -795,7 +787,7 @@ const industries = [
   },
   {
     "name": "教育培训ToB",
-    "ideal": [
+    "ideal":[
       4.0,
       4.0,
       3.5,
@@ -811,7 +803,7 @@ const industries = [
   },
   {
     "name": "物流/供应链",
-    "ideal": [
+    "ideal":[
       4.5,
       4.5,
       3.5,
@@ -827,7 +819,7 @@ const industries = [
   },
   {
     "name": "广告/营销服务",
-    "ideal": [
+    "ideal":[
       5.0,
       4.5,
       4.0,
@@ -843,7 +835,7 @@ const industries = [
   },
   {
     "name": "医疗设备/器械",
-    "ideal": [
+    "ideal":[
       4.0,
       4.5,
       4.0,
@@ -859,7 +851,7 @@ const industries = [
   },
   {
     "name": "汽车产业链",
-    "ideal": [
+    "ideal":[
       5.0,
       5.0,
       4.0,
@@ -876,7 +868,7 @@ const industries = [
 ];
 
 const totalQuestions = groups.reduce((sum,g)=>sum + g.questions.length, 0);
-const DIM_LABELS = ['成就驱动','目标执行','分析学习','严谨审慎','关系共情','社交影响'];
+const DIM_LABELS =['成就驱动','目标执行','分析学习','严谨审慎','关系共情','社交影响'];
 const STORAGE_KEY = 'tob_sales_fit_eval_v4_answers';
 let answers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 let currentGroup = 0;
@@ -993,7 +985,7 @@ function avg(ids) {
 }
 
 function getUserProfile() {
-  return [
+  return[
     avg(['D1','D2','D3','D4','D5','D6']),
     avg(['T1','T2','T3','T4','T5','T6']),
     avg(['A1','A2','A3','A4','A5','A6']),
@@ -1019,33 +1011,34 @@ function describeCore(ideal) {
     .join('、');
 }
 
-function describeGap(user, ideal) {
-  return ideal
-    .map((v,i)=>({gap: v - user[i], i}))
-    .sort((a,b)=>b.gap-a.gap)
-    .filter(x => x.gap > 0.45)
-    .slice(0,2)
-    .map(x => DIM_LABELS[x.i]);
-}
-
+// 算法优化：寻找用户相对该行业最接近的维度（相对优势）
 function describeMatch(user, ideal) {
   const arr = ideal
     .map((v,i)=>({fit: user[i] - v, ideal:v, i}))
-    .filter(x => x.fit >= -0.2 || (x.ideal >= 4 && x.fit >= -0.35))
-    .sort((a,b)=>(b.ideal + b.fit) - (a.ideal + a.fit))
-    .slice(0,3)
+    .sort((a,b)=> b.fit - a.fit) // 差值降序，最接近或溢出的在前面
+    .slice(0, 2)
     .map(x => DIM_LABELS[x.i]);
   return arr;
+}
+
+// 算法优化：寻找差距最大的维度（核心短板）
+function describeGap(user, ideal) {
+  return ideal
+    .map((v,i)=>({gap: v - user[i], i}))
+    .sort((a,b)=> b.gap - a.gap) // 差距降序
+    .filter(x => x.gap > 0.3)    // 保留真实存在的短板
+    .slice(0, 2)
+    .map(x => DIM_LABELS[x.i]);
 }
 
 function describeFitNote(user, ideal) {
   const good = describeMatch(user, ideal);
   const gap = describeGap(user, ideal);
-  const goodText = good.length ? good.join('、') : '当前暂无特别突出的贴合维度';
-  const gapText = gap.length ? gap.join('、') : '当前没有特别明显的短板';
+  const goodText = good.join('、');
+  const gapText = gap.length ? gap.join('、') : '无明显短板';
   return `
-    <span class="match-line">匹配点：<span class="good-txt">${goodText}</span></span>
-    <span class="match-line">待补点：<span class="gap-txt">${gapText}</span></span>
+    <span class="match-line">相对优势：<span class="good-txt">${goodText}</span></span>
+    <span class="match-line">需补强点：<span class="gap-txt">${gapText}</span></span>
   `;
 }
 
@@ -1182,7 +1175,25 @@ function makeCard(ind, rank, user, expanded=false) {
 function renderResults() {
   const userName = (document.getElementById('userName').value || '你').trim() || '你';
   const user = getUserProfile();
-  const scored = industries.map(ind => ({...ind, score: scoreIndustry(user, ind)})).sort((a,b)=>b.score-a.score);
+  
+  // 第二步：相对优势拉伸算法 (Ipsative Normalization)
+  const rawScores = industries.map(ind => ({ind, raw: scoreIndustry(user, ind)}));
+  let maxRaw = Math.max(...rawScores.map(d => d.raw));
+  let minRaw = Math.min(...rawScores.map(d => d.raw));
+  let range = maxRaw - minRaw;
+  if(range === 0) range = 1;
+  
+  const driveScore = user[0];
+  const topTarget = 83 + (driveScore * 2.8); 
+  const bottomTarget = 50 + (driveScore * 3);
+
+  const scored = rawScores.map(d => {
+    let normalized = (d.raw - minRaw) / range;
+    let tieBreaker = d.ind.name.length * 0.001; 
+    let finalScore = bottomTarget + normalized * (topTarget - bottomTarget) + tieBreaker;
+    return { ...d.ind, score: Number(finalScore.toFixed(1)) };
+  }).sort((a,b)=>b.score-a.score);
+
   const summary = getTopSummary(user, scored);
 
   resultPage.innerHTML = `
@@ -1206,18 +1217,18 @@ function renderResults() {
         <div class="tip-chip tip-gap"><span class="tip-key">补强方向</span><span class="focus-value focus-pink">${summary.lowDims.join('、')}</span></div>
         <div class="tip-chip tip-suggest"><span class="tip-key">使用建议</span><span class="focus-value focus-violet">先看前 3 个行业，再结合过往经历、可进入岗位和真实市场机会做最终选择。</span></div>
       </div>
-      <div class="report-basis">
-        <div class="basis-tag">测评依据与结果说明</div>
-        <div><b>依据来源：</b>本报告参考职业兴趣中的企业型倾向（RIASEC-Enterprising）、人格维度中的外向性、宜人性、尽责性、开放性与情绪稳定性，并结合 ToB 销售常见能力要求，构建六维行业适配模型。</div>
-        <div><b>结果含义：</b>结果用于帮助你做 ToB 行业方向的优先级排序与入局判断，适合做第一轮筛选、交流展示与职业讨论参考。</div>
-        <div><b>准确性说明：</b>这是基于结构化题项的行业适配评估，不替代正式的人才测评、招聘判断或临床诊断；若结合你的过往经历、目标岗位与市场机会一起看，参考价值会更高。</div>
-      </div>
     </div>
 
     <div class="fold-title">最推荐优先看的 3 个行业</div>
     ${scored.slice(0,3).map((ind,idx)=>makeCard(ind, idx+1, user, false)).join('')}
     <div class="other-group-wrap"><div class="fold-title other-group">其余 11 个行业</div>
     ${scored.slice(3).map((ind,idx)=>makeCard(ind, idx+4, user, false)).join('')}</div>
+    <div class="report-basis">
+      <div class="basis-tag">测评依据与结果说明</div>
+      <div><b>依据来源：</b>本报告参考职业兴趣中的企业型倾向（<span class="nowrap">RIASEC‑Enterprising</span>）、人格维度中的外向性、宜人性、尽责性、开放性与情绪稳定性，并结合 ToB 销售常见能力要求，构建六维行业适配模型。</div>
+      <div><b>结果含义：</b>结果用于帮助你做 ToB 行业方向的优先级排序与入局判断，适合做第一轮筛选、交流展示与职业讨论参考。</div>
+      <div><b>准确性说明：</b>这是基于结构化题项的行业适配评估，不替代正式的人才测评、招聘判断或临床诊断；若结合你的过往经历、目标岗位与市场机会一起看，参考价值会更高。</div>
+    </div>
     <div class="result-actions">
       <button class="primary-btn" id="saveReportBtn" type="button" onclick="saveLongImage()">一键保存长图报告</button>
       <button class="ghost-btn" type="button" onclick="backToLanding()">重新测评</button>
@@ -1230,30 +1241,47 @@ function renderResults() {
   scored.forEach((ind, idx) => renderRadar(`radar_${idx+1}`, user, ind.ideal));
 }
 
-
 function renderUserRadar(id, user) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
   if (radarCharts[id]) radarCharts[id].destroy();
+
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(123,97,255,0.45)');
+  gradient.addColorStop(1, 'rgba(255,95,148,0.15)');
+
+  const labelsWithScores = DIM_LABELS.map((label, i) => [label, `${user[i].toFixed(1)} 分`]);
+
   radarCharts[id] = new Chart(canvas, {
     type:'radar',
     data:{
-      labels:DIM_LABELS.map((label, i) => [label, `${user[i].toFixed(1)}分`]),
+      labels: labelsWithScores,
       datasets:[{
         label:'你的六维模型',
         data:user,
         fill:true,
-        backgroundColor:'rgba(79,70,229,.14)',
-        borderColor:'#4f46e5',
-        borderWidth:2,
-        pointBackgroundColor:'#4f46e5',
-        pointRadius:3
+        backgroundColor: gradient,
+        borderColor:'#7b61ff',
+        borderWidth: 2.5,
+        pointBackgroundColor:'#fff',
+        pointBorderColor:'#7b61ff',
+        pointBorderWidth: 2,
+        pointRadius: 4
       }]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{ display:false } },
-      scales:{ r:{ min:0, max:5, ticks:{ stepSize:1, backdropColor:'transparent', color:'#718096' }, grid:{ color:'rgba(99,102,241,.14)' }, angleLines:{ color:'rgba(99,102,241,.14)' }, pointLabels:{ color:'#4b5a70', font:{ size:12, weight:'700' } } } }
+      scales:{ 
+        r:{ 
+          min:0, max:5, 
+          ticks:{ stepSize:1, backdropColor:'transparent', color:'#a0aec0', font:{size:10} }, 
+          grid:{ color:'rgba(123,97,255,.2)', lineWidth: 1.2 }, 
+          angleLines:{ color:'rgba(123,97,255,.2)', lineWidth: 1.2 }, 
+          pointLabels:{ color:'#1e293b', font:{ size:13, weight:'800' }, padding: 12 } 
+        } 
+      }
     }
   });
 }
@@ -1338,8 +1366,21 @@ window.saveLongImage = async function() {
   }
   const exportId = 'exportSnapshotTemp';
   try {
-    const scored = industries.map(ind => ({...ind, score: scoreIndustry(getUserProfile(), ind)})).sort((a,b)=>b.score-a.score);
     const user = getUserProfile();
+    const rawScores = industries.map(ind => ({ind, raw: scoreIndustry(user, ind)}));
+    let maxRaw = Math.max(...rawScores.map(d => d.raw));
+    let minRaw = Math.min(...rawScores.map(d => d.raw));
+    let range = maxRaw - minRaw;
+    if(range === 0) range = 1;
+    const driveScore = user[0];
+    const topTarget = 83 + (driveScore * 2.8); 
+    const bottomTarget = 50 + (driveScore * 3);
+    const scored = rawScores.map(d => {
+      let normalized = (d.raw - minRaw) / range;
+      let tieBreaker = d.ind.name.length * 0.001; 
+      let finalScore = bottomTarget + normalized * (topTarget - bottomTarget) + tieBreaker;
+      return { ...d.ind, score: Number(finalScore.toFixed(1)) };
+    }).sort((a,b)=>b.score-a.score);
     const summary = getTopSummary(user, scored);
     const userName = (document.getElementById('userName').value || '你').trim() || '你';
 
@@ -1364,13 +1405,7 @@ window.saveLongImage = async function() {
         <div class="user-model-card">
           <div class="user-model-title">你的六维模型结果</div>
           <div class="user-model-grid">
-            <div class="user-chart-box"><canvas id="exportUserRadar"></canvas></div>
-            <div class="dim-badges">${user.map((v,i)=>{
-              const isTop = summary.topDims.includes(DIM_LABELS[i]);
-              const isLow = summary.lowDims.includes(DIM_LABELS[i]);
-              const cls = isTop ? 'top' : (isLow ? 'low' : '');
-              return `<div class="dim-badge ${cls}"><div class="dim-name">${DIM_LABELS[i]}</div><div class="dim-score">${v.toFixed(1)} 分</div></div>`;
-            }).join('')}</div>
+            <div class="user-chart-box" style="height:360px;"><canvas id="exportUserRadar"></canvas></div>
           </div>
         </div>
         <div class="tip-list">
