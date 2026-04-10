@@ -37,6 +37,43 @@ body {
   min-height:100vh;
   padding:14px;
 }
+
+/* --- 密码门禁专属样式 --- */
+.auth-overlay {
+  position: fixed; inset: 0; z-index: 99999;
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  padding: 45px 30px; border-radius: 32px;
+  box-shadow: 0 24px 50px rgba(0,0,0,0.15);
+  text-align: center; width: 100%; max-width: 400px;
+  border: 1px solid rgba(255,255,255,1);
+}
+.auth-icon {
+  width: 54px; height: 54px; background: linear-gradient(135deg, var(--pri), var(--pink));
+  color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin: 0 auto 20px; box-shadow: 0 10px 20px rgba(124,98,255,.3);
+}
+.auth-title { margin: 0 0 12px; color: #1e293b; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.5px; }
+.auth-desc { color: #64748b; font-size: 0.9rem; line-height: 1.7; margin-bottom: 24px; font-weight: 500;}
+.auth-input {
+  width: 100%; padding: 16px 20px; font-size: 1.1rem; border: 2px solid #e2e8f0; 
+  border-radius: 16px; margin-bottom: 16px; text-align: center; outline: none; 
+  font-weight: 800; color: #1e293b; transition: 0.3s; background: #f8fafc;
+}
+.auth-input:focus { border-color: var(--pri); background: #fff; box-shadow: 0 0 0 4px rgba(123,97,255,.1); }
+.auth-btn {
+  width: 100%; padding: 16px; background: linear-gradient(135deg, var(--pri), var(--pri2)); 
+  color: white; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 900; 
+  cursor: pointer; box-shadow: 0 12px 24px rgba(123,97,255,.3); transition: 0.2s;
+}
+.auth-btn:active { transform: scale(0.98); }
+.auth-error { color: #ef4444; font-size: 0.9rem; margin-top: 14px; font-weight: 700; display: none; }
+
+/* --- 测评主体样式 --- */
 .shell {
   max-width:760px;
   margin:0 auto;
@@ -333,7 +370,6 @@ body {
 .note-card b { display:inline-block; margin-bottom:8px; font-size:.96rem; padding:6px 10px; border-radius:12px; background:linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1d4ed8; box-shadow:0 4px 10px rgba(59,130,246,.14); }
 .note-card div { color:#405067; line-height:1.72; }
 
-/* 专门修改主雷达图容器的高度，预留多行文字空间 */
 .user-model-card {
   margin:14px 0 16px; border:1px solid #ddd8ff; border-radius:22px; padding:14px;
   background:linear-gradient(180deg,#fff, #faf8ff); box-shadow:0 10px 20px rgba(123,97,255,.05);
@@ -366,6 +402,19 @@ body {
 </style>
 </head>
 <body>
+
+<!-- 密码门禁拦截层 -->
+<div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+        <div class="auth-icon">🔒</div>
+        <h2 class="auth-title">专属访问验证</h2>
+        <p class="auth-desc">本系统基于权威心理学常模与 2026 年 ToB 行业实战数据构建<br>为保障系统环境，请输入授权码</p>
+        <input type="text" id="authCode" class="auth-input" placeholder="请输入您的专属授权码">
+        <button onclick="checkAuth()" class="auth-btn">立即验证并进入</button>
+        <div id="authError" class="auth-error">⚠️ 授权码无效或已过期，请核对</div>
+    </div>
+</div>
+
 <div class="shell" id="captureArea">
   <div class="topbar">
     <div class="eyebrow"><div class="dot"></div><div>ToB销售行业适配度评估</div></div>
@@ -378,7 +427,7 @@ body {
       <div class="panel">
         <label class="field-label" for="userName">先输入一个称呼</label>
         <input id="userName" class="input" maxlength="14" placeholder="例如：韩主任 / 小李 / 转行选手">
-        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告，并展示 14 个行业的匹配报告。</div>
+        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告。</div>
       </div>
       <button id="startBtn" class="primary-btn">正式开始</button>
     </section>
@@ -410,6 +459,24 @@ body {
 </div>
 
 <script>
+// --- 密码门禁逻辑 ---
+document.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('tob_sales_auth_passed') === 'true') {
+        document.getElementById('authOverlay').style.display = 'none';
+    }
+});
+
+window.checkAuth = function() {
+    const code = document.getElementById('authCode').value.trim();
+    if(code === 'TOB202608') { 
+        localStorage.setItem('tob_sales_auth_passed', 'true');
+        document.getElementById('authOverlay').style.display = 'none';
+    } else {
+        document.getElementById('authError').style.display = 'block';
+    }
+}
+
+// --- 测评核心数据与逻辑 ---
 const groups =[
   {
     "id": "drive",
@@ -417,36 +484,12 @@ const groups =[
     "subtitle": "看你是否愿意主动争取结果、承担目标压力，参考职业兴趣中的企业型倾向与成就追求。",
     "ref": "参考：RIASEC 企业型倾向 + 成就动机",
     "questions":[
-      {
-        "id": "D1",
-        "text": "看到明确结果目标时，我通常会更想冲一把，而不是先退一步。",
-        "reverse": false
-      },
-      {
-        "id": "D2",
-        "text": "当机会、客户或资源需要争取时，我更倾向主动出手，而不是等机会自己来。",
-        "reverse": false
-      },
-      {
-        "id": "D3",
-        "text": "为了达成重要结果，我能接受阶段性的高投入和高压力。",
-        "reverse": false
-      },
-      {
-        "id": "D4",
-        "text": "当一件事结果还没定下来时，我通常更愿意继续争取，而不是尽快抽身。",
-        "reverse": false
-      },
-      {
-        "id": "D5",
-        "text": "遇到竞争场景时，我更容易产生行动欲，而不只是紧张感。",
-        "reverse": false
-      },
-      {
-        "id": "D6",
-        "text": "只要工作稳定就好，是否做到更高结果对我来说并不重要。",
-        "reverse": true
-      }
+      { "id": "D1", "text": "看到明确结果目标时，我通常会更想冲一把，而不是先退一步。", "reverse": false },
+      { "id": "D2", "text": "当机会、客户或资源需要争取时，我更倾向主动出手，而不是等机会自己来。", "reverse": false },
+      { "id": "D3", "text": "为了达成重要结果，我能接受阶段性的高投入和高压力。", "reverse": false },
+      { "id": "D4", "text": "当一件事结果还没定下来时，我通常更愿意继续争取，而不是尽快抽身。", "reverse": false },
+      { "id": "D5", "text": "遇到竞争场景时，我更容易产生行动欲，而不只是紧张感。", "reverse": false },
+      { "id": "D6", "text": "只要工作稳定就好，是否做到更高结果对我来说并不重要。", "reverse": true }
     ]
   },
   {
@@ -455,36 +498,12 @@ const groups =[
     "subtitle": "看你是否能把目标拆成步骤并持续推进，参考尽责性中的自律、持续性与执行控制。",
     "ref": "参考：Big Five 尽责性（自律 / 持续推进）",
     "questions":[
-      {
-        "id": "T1",
-        "text": "接到任务后，我通常会先拆步骤、排节点，再真正开始推进。",
-        "reverse": false
-      },
-      {
-        "id": "T2",
-        "text": "面对周期长、反馈慢的事情，我也能持续跟进，不太容易半途松掉。",
-        "reverse": false
-      },
-      {
-        "id": "T3",
-        "text": "即使一开始反馈一般，我也会按计划继续推进，而不是很快放弃。",
-        "reverse": false
-      },
-      {
-        "id": "T4",
-        "text": "我习惯把重要事情拆成阶段任务，而不是只盯着一个模糊的大目标。",
-        "reverse": false
-      },
-      {
-        "id": "T5",
-        "text": "当目标已经定下，我通常会给自己明确的时间边界。",
-        "reverse": false
-      },
-      {
-        "id": "T6",
-        "text": "只要方向差不多，过程是否持续推进、节点是否达成都没那么重要。",
-        "reverse": true
-      }
+      { "id": "T1", "text": "接到任务后，我通常会先拆步骤、排节点，再真正开始推进。", "reverse": false },
+      { "id": "T2", "text": "面对周期长、反馈慢的事情，我也能持续跟进，不太容易半途松掉。", "reverse": false },
+      { "id": "T3", "text": "即使一开始反馈一般，我也会按计划继续推进，而不是很快放弃。", "reverse": false },
+      { "id": "T4", "text": "我习惯把重要事情拆成阶段任务，而不是只盯着一个模糊的大目标。", "reverse": false },
+      { "id": "T5", "text": "当目标已经定下，我通常会给自己明确的时间边界。", "reverse": false },
+      { "id": "T6", "text": "只要方向差不多，过程是否持续推进、节点是否达成都没那么重要。", "reverse": true }
     ]
   },
   {
@@ -493,36 +512,12 @@ const groups =[
     "subtitle": "看你是否愿意理解复杂逻辑、验证信息并持续学习，参考开放性中的求知、理解与抽象思考。",
     "ref": "参考：Big Five 开放性（求知 / 理解复杂性）",
     "questions":[
-      {
-        "id": "A1",
-        "text": "接触一个陌生行业时，我愿意先花时间把它的业务逻辑搞明白。",
-        "reverse": false
-      },
-      {
-        "id": "A2",
-        "text": "做重要判断前，我会先核实关键事实，而不是只靠直觉。",
-        "reverse": false
-      },
-      {
-        "id": "A3",
-        "text": "面对复杂问题时，我愿意多看几个角度，而不只抓表面答案。",
-        "reverse": false
-      },
-      {
-        "id": "A4",
-        "text": "如果一个产品或方案比较复杂，我通常有耐心把它研究明白。",
-        "reverse": false
-      },
-      {
-        "id": "A5",
-        "text": "我乐于持续学习新概念、新工具或新行业知识。",
-        "reverse": false
-      },
-      {
-        "id": "A6",
-        "text": "只要事情能先推进，底层逻辑其实没必要搞得太清楚。",
-        "reverse": true
-      }
+      { "id": "A1", "text": "接触一个陌生行业时，我愿意先花时间把它的业务逻辑搞明白。", "reverse": false },
+      { "id": "A2", "text": "做重要判断前，我会先核实关键事实，而不是只靠直觉。", "reverse": false },
+      { "id": "A3", "text": "面对复杂问题时，我愿意多看几个角度，而不只抓表面答案。", "reverse": false },
+      { "id": "A4", "text": "如果一个产品或方案比较复杂，我通常有耐心把它研究明白。", "reverse": false },
+      { "id": "A5", "text": "我乐于持续学习新概念、新工具或新行业知识。", "reverse": false },
+      { "id": "A6", "text": "只要事情能先推进，底层逻辑其实没必要搞得太清楚。", "reverse": true }
     ]
   },
   {
@@ -531,36 +526,12 @@ const groups =[
     "subtitle": "看你对细节、风险与错误的敏感度，参考尽责性中的有序性与审慎决策倾向。",
     "ref": "参考：Big Five 尽责性（有序 / 审慎）",
     "questions":[
-      {
-        "id": "R1",
-        "text": "提交重要材料前，我通常会主动复查细节，尽量避免低级错误。",
-        "reverse": false
-      },
-      {
-        "id": "R2",
-        "text": "做关键决策时，我更习惯先验证信息，再做判断。",
-        "reverse": false
-      },
-      {
-        "id": "R3",
-        "text": "我会留意流程和细节，因为这些往往决定最终结果。",
-        "reverse": false
-      },
-      {
-        "id": "R4",
-        "text": "面对重要事项时，我通常会提前预想风险点。",
-        "reverse": false
-      },
-      {
-        "id": "R5",
-        "text": "即使时间紧，我也会尽量保留必要的核对步骤。",
-        "reverse": false
-      },
-      {
-        "id": "R6",
-        "text": "只要大方向没问题，细节上的小错通常不用太在意。",
-        "reverse": true
-      }
+      { "id": "R1", "text": "提交重要材料前，我通常会主动复查细节，尽量避免低级错误。", "reverse": false },
+      { "id": "R2", "text": "做关键决策时，我更习惯先验证信息，再做判断。", "reverse": false },
+      { "id": "R3", "text": "我会留意流程和细节，因为这些往往决定最终结果。", "reverse": false },
+      { "id": "R4", "text": "面对重要事项时，我通常会提前预想风险点。", "reverse": false },
+      { "id": "R5", "text": "即使时间紧，我也会尽量保留必要的核对步骤。", "reverse": false },
+      { "id": "R6", "text": "只要大方向没问题，细节上的小错通常不用太在意。", "reverse": true }
     ]
   },
   {
@@ -569,36 +540,12 @@ const groups =[
     "subtitle": "看你是否能感知他人需求、建立信任并维持长期关系，参考宜人性中的共情与合作倾向。",
     "ref": "参考：Big Five 宜人性（共情 / 合作）",
     "questions":[
-      {
-        "id": "E1",
-        "text": "和人沟通时，我通常能比较快抓到对方真正关心的点。",
-        "reverse": false
-      },
-      {
-        "id": "E2",
-        "text": "当对方表达顾虑时，我会先理解他的立场，再想怎么推进。",
-        "reverse": false
-      },
-      {
-        "id": "E3",
-        "text": "我愿意花时间经营关系，而不是只在需要结果时才联系别人。",
-        "reverse": false
-      },
-      {
-        "id": "E4",
-        "text": "在合作里，我会注意让对方感到被理解，而不只是把我的意思说清楚。",
-        "reverse": false
-      },
-      {
-        "id": "E5",
-        "text": "我通常愿意倾听别人没有明说出来的担心和顾虑。",
-        "reverse": false
-      },
-      {
-        "id": "E6",
-        "text": "在工作里，我更在意把自己的意思讲完，而不是确认对方是否真正理解。",
-        "reverse": true
-      }
+      { "id": "E1", "text": "和人沟通时，我通常能比较快抓到对方真正关心的点。", "reverse": false },
+      { "id": "E2", "text": "当对方表达顾虑时，我会先理解他的立场，再想怎么推进。", "reverse": false },
+      { "id": "E3", "text": "我愿意花时间经营关系，而不是只在需要结果时才联系别人。", "reverse": false },
+      { "id": "E4", "text": "在合作里，我会注意让对方感到被理解，而不只是把我的意思说清楚。", "reverse": false },
+      { "id": "E5", "text": "我通常愿意倾听别人没有明说出来的担心和顾虑。", "reverse": false },
+      { "id": "E6", "text": "在工作里，我更在意把自己的意思讲完，而不是确认对方是否真正理解。", "reverse": true }
     ]
   },
   {
@@ -607,50 +554,20 @@ const groups =[
     "subtitle": "看你在陌生关系中开口、表达、主导和影响他人的倾向，参考外向性中的主动表达与自信。",
     "ref": "参考：Big Five 外向性（主动表达 / 影响）",
     "questions":[
-      {
-        "id": "S1",
-        "text": "在陌生人较多的场合里，我通常能比较自然地先开口破冰。",
-        "reverse": false
-      },
-      {
-        "id": "S2",
-        "text": "当我有清晰观点时，我愿意表达出来并争取他人认同。",
-        "reverse": false
-      },
-      {
-        "id": "S3",
-        "text": "在一对一沟通里，我通常能逐步把节奏带到我想讨论的话题上。",
-        "reverse": false
-      },
-      {
-        "id": "S4",
-        "text": "即使面对比我更强势的人，我也能基本保持表达和回应。",
-        "reverse": false
-      },
-      {
-        "id": "S5",
-        "text": "在需要展示或汇报的场景里，我通常愿意站出来承担表达任务。",
-        "reverse": false
-      },
-      {
-        "id": "S6",
-        "text": "只要场面一紧张，我就更倾向少说少做，尽量不成为注意焦点。",
-        "reverse": true
-      }
+      { "id": "S1", "text": "在陌生人较多的场合里，我通常能比较自然地先开口破冰。", "reverse": false },
+      { "id": "S2", "text": "当我有清晰观点时，我愿意表达出来并争取他人认同。", "reverse": false },
+      { "id": "S3", "text": "在一对一沟通里，我通常能逐步把节奏带到我想讨论的话题上。", "reverse": false },
+      { "id": "S4", "text": "即使面对比我更强势的人，我也能基本保持表达和回应。", "reverse": false },
+      { "id": "S5", "text": "在需要展示或汇报的场景里，我通常愿意站出来承担表达任务。", "reverse": false },
+      { "id": "S6", "text": "只要场面一紧张，我就更倾向少说少做，尽量不成为注意焦点。", "reverse": true }
     ]
   }
 ];
+
 const industries =[
   {
     "name": "半导体/硬科技",
-    "ideal":[
-      4.0,
-      4.0,
-      5.0,
-      4.5,
-      3.0,
-      3.5
-    ],
+    "ideal":[4.0, 4.0, 5.0, 4.5, 3.0, 3.5],
     "status": "2026年全球半导体市场规模预计将突破6000亿美元，年增长率达12%；部分预测显示销售额将增至9750亿美元，同比增长约25%。AI、先进制程与供应链去风险化驱动下，半导体成为成长最明确的产业。芯片销售人才极度稀缺，尤其在深圳，真正能打硬仗的销售团队迟迟组建不起来。人才缺口预计2026年将增至50万人。",
     "salary": "2026年芯片行业校招平均起薪约20万-40万元，设计类岗位可达25万-45万元。芯片销售（技术支持方向）每月一半时间在客户现场，薪资看业绩和行业热度。",
     "growth": "芯片销售代表→区域销售经理→大区总监→事业部总经理。技术型销售可走FAE（现场应用工程师）→技术销售经理→产品线总监的复合路径。随着国产芯片公司持续扩张，FAE和芯片销售需求依然旺盛。",
@@ -659,14 +576,7 @@ const industries =[
   },
   {
     "name": "云/AI/软件",
-    "ideal":[
-      4.5,
-      4.5,
-      4.5,
-      4.0,
-      3.5,
-      4.0
-    ],
+    "ideal":[4.5, 4.5, 4.5, 4.0, 3.5, 4.0],
     "status": "2026年AI岗位数量同比增长约14倍，AI新发岗位的平均月薪已突破6万元，将新经济行业的整体平均水平甩开了足足26%。AI岗位在新经济岗位中的占比从2.29%跃升至26.23%，增长超过10倍。企业从试点探索转向规模化价值创造。",
     "salary": "大模型与AIGC算法工程师年薪均值达65万元。多模态算法工程师年薪区间60万-150万元，具身智能算法工程师年薪最高可达200万元。AI行业优秀人才跳槽的薪资涨幅维持在20%-30%，关键技术岗涨幅最高可达50%。",
     "growth": "SDR/BDR→客户经理→大客户经理→区域总监→副总裁。AI产品销售和软件销售岗位需求旺盛，1-3年经验SaaS销售月薪可达19.7K，AI销售专家3-5年经验年薪可达40-80万。",
@@ -675,14 +585,7 @@ const industries =[
   },
   {
     "name": "新能源/储能",
-    "ideal":[
-      5.0,
-      5.0,
-      4.0,
-      3.5,
-      3.0,
-      4.0
-    ],
+    "ideal":[5.0, 5.0, 4.0, 3.5, 3.0, 4.0],
     "status": "2026年储能行业关键词依然是“出海”，当国内市场陷入红海竞争，所有人都将目光投向轮番爆发的海外市场。“136号文”取消了新能源强制配储，但“114号文”带来了容量电价机制，储能行业进入“机制切换元年”，从“强配”到“真赚钱”的质变正在发生。",
     "salary": "出海销售负责人年薪300万的岗位空置两年招不到人。BMS高级工程师年薪70万-130万，电力电子专家70万-130万，EMS/SCADA工程师65万-120万。深圳储能企业人才竞争强度明显高于传统新能源细分领域，薪酬体系面临系统性重构。",
     "growth": "销售工程师→区域销售经理→海外销售总监→事业部总经理。5年以上经验可主导百万级项目，8年以上年薪可达80-150万+出海补贴。",
@@ -691,14 +594,7 @@ const industries =[
   },
   {
     "name": "互联网商业化",
-    "ideal":[
-      5.0,
-      4.5,
-      4.0,
-      3.0,
-      3.0,
-      5.0
-    ],
+    "ideal":[5.0, 4.5, 4.0, 3.0, 3.0, 5.0],
     "status": "2026年广告销售/商务开发年薪约10万-30万元（一线城市更高）。2026年外部招聘薪资涨幅预计为20%，AI方向跳槽薪资涨幅达30%。市场营销人才需求同比增长约23%，就业率稳定在90%以上。",
     "salary": "应届生（一线城市）月薪6K-15K，头部互联网可达12K-18K；3-5年经验（主管/经理）年薪20-40万。数字营销总监年薪70-130万，增长负责人年薪80-150万。广告销售年薪约10万-30万元，投放执行月薪8K-20K。",
     "growth": "广告销售→客户经理→销售总监→副总裁。节奏快，正反馈周期短（1-3个月），适合抗压能力强、喜欢短平快的人，3-5年经验可晋升管理岗。",
@@ -707,14 +603,7 @@ const industries =[
   },
   {
     "name": "生物医药",
-    "ideal":[
-      4.0,
-      4.0,
-      4.0,
-      4.5,
-      5.0,
-      4.5
-    ],
+    "ideal":[4.0, 4.0, 4.0, 4.5, 5.0, 4.5],
     "status": "生物医药产业在创新药物、基因技术、医疗器械及服务外包等赛道呈现扩张态势，全国层面人才需求增长明显。2026年医药代表正遭遇三大危机：身份危机、业绩危机和认知危机，叠加行业裁员频频。行业调薪策略谨慎，68%企业调薪集中在0%-6%。",
     "salary": "跨国药企（MNC）调薪区间2%-8%，生物制药企业与民营本土企业3%-5%，生物技术公司82%企业调薪0%-6%。研发硕博起薪15-25万/年，CRA/CRC 2-3年经验25-40万/年。",
     "growth": "医药代表→区域销售经理→大区总监→全国销售总监。转型路径为“内部升级→行业内转型→跨界拓展”，优先走“学术化+合规化+数字化”路径。2026年医药代表招聘难，本质是强监管下的能力模型更换——企业既要“招得到”，更要“用得稳、用得合规”。",
@@ -723,14 +612,7 @@ const industries =[
   },
   {
     "name": "智能制造/工业自动化",
-    "ideal":[
-      4.0,
-      4.5,
-      4.0,
-      4.5,
-      3.5,
-      3.5
-    ],
+    "ideal":[4.0, 4.5, 4.0, 4.5, 3.5, 3.5],
     "status": "智能装备制造涵盖工业机器人、数控机床、智能检测设备等研发与生产，自动化生产线集成面向汽车、电子、医药等高自动化需求行业。2026年PLC人才缺口将达100万。工业机器人、机器视觉、AGV需求快速增长。春招会上算法工程师月薪2.2万-3万元，“招了两个月没招到几个合适的”。",
     "salary": "基础执行层（3-5年经验）年薪20-30万元。自动化类本科应届生起薪8万-12万元/年。系统集成负责人年薪60万-120万，PLC/运动控制专家年薪40万-80万。硕士校招月薪8000-10000元。",
     "growth": "销售工程师→区域经理→销售总监（管理线）；初级→中级→高级销售工程师（专业线），Y型双通道发展。公司提供系统化培训和清晰的晋升路径。PLC自动化领域被年轻人视为“前景稳定、需求旺盛、晋升明确”的转行首选。",
@@ -739,14 +621,7 @@ const industries =[
   },
   {
     "name": "企业服务/SaaS",
-    "ideal":[
-      4.5,
-      4.5,
-      4.5,
-      4.0,
-      4.0,
-      4.0
-    ],
+    "ideal":[4.5, 4.5, 4.5, 4.0, 4.0, 4.0],
     "status": "SaaS行业进入2026年处于持续失衡状态，对产品经理、增长营销人员、客户成功专家和数据驱动的销售专业人才的需求持续超过供给。中国SaaS行业遭受了前所未有的挑战，业务缩减、裁员降薪成为常态。2026年企服圈叙事彻底改变，以前聊“增长”和“续费率”，现在算的是“推理成本”和“算力ROI”。",
     "salary": "SaaS大客户销售66.7%岗位月薪10K-20K，年薪12万-24万，2024年较2023年下降了20%。美国市场Account Executives底薪$92K-$218K，OTE中位数$190K。中国大陆SaaS销售薪资与美国差距较大。",
     "growth": "SDR/BDR→客户经理→大客户经理→区域总监。1-3年经验月薪可达19.7K，3-5年可晋升管理岗或资深客户经理，综合年薪30-50万。",
@@ -755,14 +630,7 @@ const industries =[
   },
   {
     "name": "国际贸易/出海",
-    "ideal":[
-      5.0,
-      4.5,
-      4.0,
-      4.0,
-      4.0,
-      4.5
-    ],
+    "ideal":[5.0, 4.5, 4.0, 4.0, 4.0, 4.5],
     "status": "2025年中国进出口总值超过45万亿元，连续第9年稳步增长。2026年前两个月出口同比暴增21.8%，远超市场预期。2026年出海全面进入“本地化深耕”阶段，从销售向全产业链延展。跨境电商从“野蛮生长”向“精细化品牌运营”转型，出海已不再是选择题，而是中国企业增长的必答题。同时，对美出口下降，但其他市场正在补偿。",
     "salary": "外贸管培生月薪1万-1.5万元，国际销售经理1.5万-2.5万元。“海外销售的薪资差距挺大，主要看业绩，年薪百万的也有”。出海销售岗位需求从销售向全产业链延展，薪资天花板较高。",
     "growth": "外贸业务员→外贸经理→区域总监→海外事业部总经理。3-5年经验年薪20-30万，8年以上+海外资源年薪50-100万+出海补贴。传统单证、跟单岗竞争激烈、薪资偏低，需向更高附加值岗位升级。",
@@ -771,14 +639,7 @@ const industries =[
   },
   {
     "name": "金融科技",
-    "ideal":[
-      4.5,
-      4.0,
-      4.5,
-      5.0,
-      4.0,
-      4.0
-    ],
+    "ideal":[4.5, 4.0, 4.5, 5.0, 4.0, 4.0],
     "status": "2026年金融科技类校招需求增加100%。银行保险业开抢AI人才，AI相关金融科技岗薪资呈现清晰分层。金融科技岗位连续多年成为春招热点，2026年的关键词明确指向了人工智能。数字金融人才整体月薪酬范围24000-46000元，平均月薪酬约11000元。",
     "salary": "AI算法工程师起薪可达45万，部分核心岗位年薪最高80万。上市地方银行曾开出最高80万年薪招聘AI高层次人才，上限水平甚至高于董监高同期薪酬。应届生近一半月薪达10000元以上，仅3%月薪低于5000元。前台岗位招聘需求同比增长12%，金融科技及量化岗位需求增幅达15%。",
     "growth": "销售专员→客户经理→区域总监→事业部总经理。需懂金融机构业务流程，3-5年经验年薪30-50万，资深合规科技销售年薪可达80-120万。",
@@ -787,14 +648,7 @@ const industries =[
   },
   {
     "name": "教育培训ToB",
-    "ideal":[
-      4.0,
-      4.0,
-      3.5,
-      3.0,
-      4.5,
-      4.5
-    ],
+    "ideal":[4.0, 4.0, 3.5, 3.0, 4.5, 4.5],
     "status": "2026年全球培训市场规模预计达1.2万亿美元，年复合增长率8.5%；中国培训市场规模突破8000亿元，职业教育和成人培训占比提升至45%。企培行业正经历一场“无声的革命”，AI正在重塑知识传递的方式，产教融合正把企业变成教育综合体，客户要的不再是课程而是结果。教育行业上演“冰与火之歌”，传统教培机构招生难、续费难、利润薄，有的校长靠卖房维持运营。",
     "salary": "培训行业形成“金字塔式”分层结构，头部机构凭借品牌、技术与资源整合能力占据高端市场，通过构建“培训-认证-就业”闭环形成壁垒。头部机构销冠年薪可超百万，中小机构面临同质化竞争与运营成本压力。",
     "growth": "销售专员→区域经理→大区总监→事业部总经理。1年可晋升区域主管，3-5年可独立负责区域市场，晋升速度快。但需适应从“讲课”思维向“提供结果”的转型。",
@@ -803,14 +657,7 @@ const industries =[
   },
   {
     "name": "物流/供应链",
-    "ideal":[
-      4.5,
-      4.5,
-      3.5,
-      4.0,
-      3.5,
-      4.0
-    ],
+    "ideal":[4.5, 4.5, 3.5, 4.0, 3.5, 4.0],
     "status": "物流依然是一个持续增长的行业，需求并没有消失，反而在扩张。但增量正在重新分配，新的增长不再平均地落在所有岗位上，而是集中流向少数更复杂、更系统化的场景。2026年美国物流与供应链行业平均年薪达$126,400，较上年$120,600有所增长。",
     "salary": "美国采购/采购总监和经理平均年薪$106,700，仓库经理和主管平均$86,200。国际货代熟手（1-3年）一线城市月薪8000-15000元，提成占比可达30%-40%。华东地区按上海、杭州、南京、苏州、宁波、合肥六城拆解9个典型岗位，调薪趋势与地区差异明显。",
     "growth": "销售→销售主管→销售经理→区域总监（销售线）；专员→规划师→高级规划师→供应链经理（专业线）。入行3年年薪可达20万+。物流行业薪酬增速放缓，但从业者对未来仍持乐观态度。",
@@ -819,14 +666,7 @@ const industries =[
   },
   {
     "name": "广告/营销服务",
-    "ideal":[
-      5.0,
-      4.5,
-      4.0,
-      3.0,
-      4.0,
-      5.0
-    ],
+    "ideal":[5.0, 4.5, 4.0, 3.0, 4.0, 5.0],
     "status": "2026年市场对营销人才需求同比增长约23%，就业率稳定在90%以上。但广告主平均ROI持续下降，传统广告模式加速失效，营销人的职业前景正面临结构性重塑，AI与数据技能正从加分项变为生存底线。媒体行业销售薪酬面临独特挑战，组织必须应对薪酬调整的复杂性。",
     "salary": "广告销售年薪约10万-30万元（一线城市更高）。初级广告销售（0-2年）年薪8万-15万元。应届生（一线城市）月薪6K-15K，头部互联网/快消可达12K-18K；3-5年经验（主管/经理）年薪20-40万。掌握“AI+细分技能”的复合型人才薪资涨幅可达150%。",
     "growth": "广告销售→客户经理→销售总监→副总裁。1-3年经验可独立负责客户，3-5年可晋升管理岗，节奏快，正反馈周期短（1-2个月）。但传统营销岗位加速萎缩，需要向“超级个体”转型。",
@@ -835,14 +675,7 @@ const industries =[
   },
   {
     "name": "医疗设备/器械",
-    "ideal":[
-      4.0,
-      4.5,
-      4.0,
-      4.0,
-      4.5,
-      4.5
-    ],
+    "ideal":[4.0, 4.5, 4.0, 4.0, 4.5, 4.5],
     "status": "中国医疗器械市场规模已超1.2万亿，专业营销人才缺口巨大。2026年医疗器械领域裁员潮与高薪抢人并行，求职者“找不到”，企业“招不到”。医疗器械行业薪资优势显著，核心岗位3-5年薪资翻倍现象普遍。",
     "salary": "美国医疗器械销售代表底薪$68,000，OTE中位数$160,000，顶尖销售总薪酬可达$336,763。医疗行业销售人员平均年薪较普通行业高出40%-60%。硕士应届生研发岗年薪20-35万，核心专业岗15-25万。医疗健康与生命科学行业外部招聘平均薪资涨幅为15%，销售与市场专业人才薪资涨幅最高可达20%。",
     "growth": "销售代表→区域经理→大区总监→全国销售总监。2年以上经验可晋升，5-8年可负责大区。医疗器械销售是“门槛最低、薪资天花板最高”的岗位之一，不是刻板印象里的“喝酒应酬”，而是专业价值的传递。",
@@ -851,14 +684,7 @@ const industries =[
   },
   {
     "name": "汽车产业链",
-    "ideal":[
-      5.0,
-      5.0,
-      4.0,
-      3.5,
-      4.0,
-      4.5
-    ],
+    "ideal":[5.0, 5.0, 4.0, 3.5, 4.0, 4.5],
     "status": "2026年汽车从业者普遍面临裁员、降薪与高强度工作的三重压力。自2024年日产开启全球裁员潮以来，全球汽车产业已削减超13万岗位，威马、高合、哪吒等品牌相继退场，员工一夜失业。价格战、内卷、裁员成为行业关键词。2025年遭遇涨薪和降薪的人各占三成，仅三成与上年持平。",
     "salary": "汽车销售65.3%岗位月薪6-15K。新能源车企“抢人”大战中，薪资呈现明显结构性差异——研发与核心技术岗最为抢手，供应链关键岗次之，市场与销售岗更看业绩与地域。传统内燃机岗位薪资难以上涨，新能源赛道薪资越来越高。少有人经历20%以上的薪资上涨。",
     "growth": "销售顾问→销售经理→区域总监→品牌总经理。1-3年经验月薪可达16.3K，3-5年可晋升管理岗，但行业离职率高（66%），强流动性特征。焦虑写在每个汽车人脸上——升职的如坐火山口，守业的普遍悲观。",
@@ -1011,22 +837,20 @@ function describeCore(ideal) {
     .join('、');
 }
 
-// 算法优化：寻找用户相对该行业最接近的维度（相对优势）
 function describeMatch(user, ideal) {
   const arr = ideal
     .map((v,i)=>({fit: user[i] - v, ideal:v, i}))
-    .sort((a,b)=> b.fit - a.fit) // 差值降序，最接近或溢出的在前面
+    .sort((a,b)=> b.fit - a.fit) 
     .slice(0, 2)
     .map(x => DIM_LABELS[x.i]);
   return arr;
 }
 
-// 算法优化：寻找差距最大的维度（核心短板）
 function describeGap(user, ideal) {
   return ideal
     .map((v,i)=>({gap: v - user[i], i}))
-    .sort((a,b)=> b.gap - a.gap) // 差距降序
-    .filter(x => x.gap > 0.3)    // 保留真实存在的短板
+    .sort((a,b)=> b.gap - a.gap)
+    .filter(x => x.gap > 0.3)    
     .slice(0, 2)
     .map(x => DIM_LABELS[x.i]);
 }
@@ -1176,7 +1000,6 @@ function renderResults() {
   const userName = (document.getElementById('userName').value || '你').trim() || '你';
   const user = getUserProfile();
   
-  // 第二步：相对优势拉伸算法 (Ipsative Normalization)
   const rawScores = industries.map(ind => ({ind, raw: scoreIndustry(user, ind)}));
   let maxRaw = Math.max(...rawScores.map(d => d.raw));
   let minRaw = Math.min(...rawScores.map(d => d.raw));
