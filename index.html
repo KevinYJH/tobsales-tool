@@ -156,6 +156,9 @@ body {
 .mini-note {
   margin-top:12px; font-size:.9rem; color:#8793a8; line-height:1.7;
 }
+.mini-note-center {
+  text-align:center; margin-top:14px;
+}
 .quiz-sticky {
   position:sticky; top:0; z-index:30;
   padding-top:4px; margin-bottom:10px;
@@ -510,8 +513,7 @@ body {
 <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
         <div class="auth-icon">🔒</div>
-        <h2 class="auth-title">专属访问验证</h2>
-        <p class="auth-desc">本系统基于权威心理学常模与 2026 年 ToB 行业实战数据构建<br>为保障系统环境，请输入授权码</p>
+        <h2 class="auth-title">ToB销售适配测评工具</h2>
         <input type="text" id="authCode" class="auth-input" placeholder="请输入您的专属授权码">
         <button onclick="checkAuth()" class="auth-btn">立即验证并进入</button>
         <div id="authError" class="auth-error">⚠️ 授权码无效或已过期，请核对</div>
@@ -530,9 +532,10 @@ body {
       <div class="panel">
         <label class="field-label" for="userName">先输入一个称呼</label>
         <input id="userName" class="input" maxlength="14" placeholder="例如：韩主任 / 小李 / 转行选手">
-        <div class="mini-note">题目按 6 个维度分步完成，答完会生成 14 个行业的匹配报告。</div>
+        <div class="mini-note">请根据你的真实工作偏好与行为习惯作答，越接近实际情况，测评结果越有参考价值。</div>
       </div>
       <button id="startBtn" class="primary-btn">正式开始</button>
+      <div class="mini-note mini-note-center">题目按 6 个维度分步完成</div>
     </section>
 
     <section id="quizPage" class="page">
@@ -1150,7 +1153,7 @@ function renderModule(index) {
 
   moduleKicker.textContent = `第 ${index + 1} 类 / 共 ${groups.length} 类`;
   moduleTitle.textContent = group.title;
-  moduleSub.textContent = group.subtitle;
+  moduleSub.textContent = "";
   scrollViewportTop();
 
   moduleForm.innerHTML = group.questions.map((q, idx) => {
